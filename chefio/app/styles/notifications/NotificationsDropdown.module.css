@@ -1,0 +1,81 @@
+.dropdownOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1000;
+}
+
+.dropdown {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  width: 400px;
+  max-height: 80vh;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  z-index: 1001;
+}
+
+.header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #F4F5F7;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2E3E5C;
+  margin: 0;
+}
+
+.content {
+  padding: 12px;
+  overflow-y: auto;
+  max-height: calc(80vh - 60px);
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #9FA5C0;
+  margin: 0 0 12px 8px;
+  text-transform: uppercase;
+}
+
+.notificationsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 32px 16px;
+  color: #9FA5C0;
+}
+
+@media (max-width: 768px) {
+  .dropdown {
+    width: 100%;
+    right: 0;
+    top: 60px;
+    max-height: calc(100vh - 60px);
+    border-radius: 16px 16px 0 0;
+  }
+} 

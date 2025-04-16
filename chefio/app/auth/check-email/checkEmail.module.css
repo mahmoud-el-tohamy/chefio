@@ -1,0 +1,86 @@
+/* جعل الصفحة بأكملها في المنتصف رأسيًا وأفقيًا */
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* توسيط رأسي */
+  align-items: center; /* توسيط أفقي */
+  min-height: 100vh; /* تملأ الشاشة بالكامل */
+  text-align: center;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+/* حاوية الخانات الستة */
+.codeContainer {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+/* تنسيق الحقول */
+.codeInput {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  font-size: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+/* عند التركيز يصبح الإطار باللون الأساسي */
+.codeInput:focus {
+  border-color: var(--primary-color); /* أو استخدم #1FCC79 مثلاً */
+}
+
+/* العد التنازلي */
+.expireText {
+  color: #999;
+  margin-bottom: 1rem;
+}
+
+.expireTime {
+  color: red;
+  font-weight: bold;
+}
+
+/* زر Verify */
+.verifyButton {
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.verifyButton:hover {
+  background-color: #17a96a;
+}
+
+/* زر Send again */
+.sendAgainButton {
+  background-color: transparent;
+  border: 1px solid #ddd;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.sendAgainButton:hover {
+  background-color: #f0f0f0;
+}

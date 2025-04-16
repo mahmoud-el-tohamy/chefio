@@ -1,0 +1,53 @@
+.container {
+  min-height: 100vh;
+  background-color: #FAFAFA;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.content {
+  text-align: center;
+  max-width: 800px; 
+  width: 100%;
+  margin: 0px auto;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 1rem 0;
+  color: #2E3E5C;
+}
+
+.brand {
+  color: #1FCC79;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #9FA5C0;
+  margin-bottom: 2rem;
+}
+
+.loginText {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  color: #2E3E5C;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+} 

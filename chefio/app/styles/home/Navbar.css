@@ -1,0 +1,37 @@
+/* Navbar.css
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem 1rem 0rem;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  overflow: hidden;
+  height: 75px;
+}
+
+.navbar__right .icon-btn {
+  background: none;
+  border: none;
+  margin-left: 1rem;
+  cursor: pointer;
+  color: var(--secondary-text-color);
+  transition: color 0.2s ease;
+}
+
+.navbar__right .icon-btn:hover {
+  color: #666;
+}
+
+.navbar__right .icon-btn.active {
+  color: var(--primary-color);
+}
+
+.navbar__logo-img {
+  height: 100px;
+  width: auto;
+} */

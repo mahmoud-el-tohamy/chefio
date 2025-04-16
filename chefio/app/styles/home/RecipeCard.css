@@ -1,0 +1,74 @@
+/* app/styles/RecipeCard.css */
+
+.recipe-card {
+  background-color: #fff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease;
+}
+
+.recipe-card:hover {
+  transform: translateY(-2px);
+}
+
+.recipe-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem 0 1rem;
+}
+
+.recipe-card__author {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recipe-card__author-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--main-text-color);
+}
+
+.recipe-card__heart-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--secondary-text-color);
+  transition: color 0.2s ease;
+}
+
+.recipe-card__heart-btn.liked {
+  color: var(--primary-color);
+}
+
+.recipe-card__image {
+  width: 100%;
+  margin-top: 0.5rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.recipe-card__image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.recipe-card__info {
+  padding: 0.75rem 1rem 1rem 1rem;
+}
+
+.recipe-card__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: var(--main-text-color);
+}
+
+.recipe-card__meta {
+  font-size: 0.9rem;
+  color: var(--secondary-text-color);
+}
