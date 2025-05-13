@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import HomeIcon from "@/components/icons/HomeIcon";
 import ProfileIcon from "@/components/icons/ProfileIcon";
 import MenuIcon from "@/components/icons/MenuIcon";
+import { createPortal } from "react-dom";
 
 function Navbar() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -21,6 +22,7 @@ function Navbar() {
     older: []
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
   const fetchNotifications = async () => {
@@ -58,6 +60,11 @@ function Navbar() {
 
     // Cleanup interval on unmount
     return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
   }, []);
 
   const handleNotificationsToggle = () => {
@@ -110,7 +117,9 @@ function Navbar() {
             src="/icons/edit.svg"
             alt="Create Recipe"
             width={24}
-            height={24} />
+            height={24}
+            className={pathname === "/create-recipe" ? styles.active : undefined}
+          />
         </Link>
         <Link
           href={`/profile/${currentUser.username}`}
@@ -137,7 +146,7 @@ function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      {mobileMenuOpen && (
+      {mounted && mobileMenuOpen && createPortal(
         <div className={styles.mobileMenu} id="mobile-menu" role="menu">
           <Link
             href="/home"
@@ -149,14 +158,16 @@ function Navbar() {
           </Link>
           <Link
             href="/create-recipe"
-            className={styles.mobileNavLink}
+            className={styles.mobileNavLink + (pathname === "/create-recipe" ? " " + styles.active : "")}
             onClick={() => setMobileMenuOpen(false)}
           >
             <Image
               src="/icons/edit.svg"
               alt="Create Recipe"
               width={24}
-              height={24} />
+              height={24}
+              className={pathname === "/create-recipe" ? styles.active : undefined}
+            />
             Create Recipe
           </Link>
           <Link
@@ -187,7 +198,8 @@ function Navbar() {
               </span>
             )}
           </button>
-        </div>
+        </div>,
+        document.body
       )}
 
       <NotificationsDropdown

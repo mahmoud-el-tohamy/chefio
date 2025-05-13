@@ -1,0 +1,192 @@
+import React, { useState } from 'react';
+import styles from '@/styles/CreateRecipe.module.css';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+
+interface Step2Props {
+  onNext: () => void;
+  onBack: () => void;
+  onCancel: () => void;
+}
+
+function reorder<T>(list: T[], startIndex: number, endIndex: number): T[] {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+  return result;
+}
+
+export default function Step2({ onNext, onBack, onCancel }: Step2Props) {
+  const [ingredients, setIngredients] = useState(['', '', '']);
+  const [steps, setSteps] = useState(['']);
+  const [stepImages, setStepImages] = useState<(string | null)[]>(['']);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const handleIngredientChange = (idx: number, value: string) => {
+    const newIngredients = [...ingredients];
+    newIngredients[idx] = value;
+    setIngredients(newIngredients);
+    setErrors(prev => ({ ...prev, ingredients: '' }));
+  };
+  const handleAddIngredient = () => setIngredients([...ingredients, '']);
+
+  const handleStepChange = (idx: number, value: string) => {
+    const newSteps = [...steps];
+    newSteps[idx] = value;
+    setSteps(newSteps);
+    setErrors(prev => ({ ...prev, steps: '' }));
+  };
+  const handleAddStep = () => {
+    setSteps([...steps, '']);
+    setStepImages([...stepImages, null]);
+  };
+
+  const handleStepImageChange = (idx: number, file: File) => {
+    const newImages = [...stepImages];
+    newImages[idx] = URL.createObjectURL(file);
+    setStepImages(newImages);
+  };
+
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+    if (result.type === 'ingredient') {
+      setIngredients(reorder(ingredients, result.source.index, result.destination.index));
+    } else if (result.type === 'step') {
+      setSteps(reorder(steps, result.source.index, result.destination.index));
+      setStepImages(reorder(stepImages, result.source.index, result.destination.index));
+    }
+  };
+
+  const validateStep2 = () => {
+    const newErrors: { [key: string]: string } = {};
+    
+    const hasValidIngredient = ingredients.some(ing => ing.trim() !== '');
+    if (!hasValidIngredient) {
+      newErrors.ingredients = 'Please add at least one ingredient';
+    }
+
+    const hasValidStep = steps.some(step => step.trim() !== '');
+    if (!hasValidStep) {
+      newErrors.steps = 'Please add at least one step';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    if (validateStep2()) {
+      onNext();
+    }
+  };
+
+  return (
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className={styles.stepContainer}>
+        <div className={styles.headerRow}>
+          <span className={styles.stepTitle}>Upload Your Post <span className={styles.stepCount}>2/2</span></span>
+          <button className={styles.cancelBtn} onClick={onCancel}>Cancel</button>
+        </div>
+        <div className={styles.ingredientSection}>
+          <div className={styles.ingredientHeaderRow}>
+            <span className={styles.inputLabel}>Ingredients</span>
+          </div>
+          <Droppable droppableId="ingredients" type="ingredient">
+            {(provided) => (
+              <div ref={provided.innerRef} {...provided.droppableProps}>
+                {ingredients.map((ingredient, idx) => (
+                  <Draggable key={idx} draggableId={`ingredient-${idx}`} index={idx}>
+                    {(provided, snapshot) => (
+                      <div
+                        className={styles.ingredientRow}
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                      >
+                        <span className={styles.dragIcon} {...provided.dragHandleProps}>⋮⋮</span>
+                        <input
+                          className={`${styles.input} ${errors.ingredients ? styles.inputError : ''}`}
+                          type="text"
+                          placeholder="Enter ingredient"
+                          value={ingredient}
+                          onChange={e => handleIngredientChange(idx, e.target.value)}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+          {errors.ingredients && <div className={styles.errorText}>{errors.ingredients}</div>}
+          <button className={styles.addIngredientBtn} onClick={handleAddIngredient}>+ Ingredient</button>
+        </div>
+        <div className={styles.stepsSection}>
+          <span className={styles.inputLabel}>Steps</span>
+          <Droppable droppableId="steps" type="step">
+            {(provided) => (
+              <div ref={provided.innerRef} {...provided.droppableProps}>
+                {steps.map((step, idx) => (
+                  <Draggable key={idx} draggableId={`step-${idx}`} index={idx}>
+                    {(provided, snapshot) => (
+                      <div
+                        className={styles.stepRow}
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                      >
+                        <span className={styles.stepNumber}>{idx + 1}</span>
+                        <span className={styles.dragIcon} {...provided.dragHandleProps}>⋮⋮</span>
+                        <textarea
+                          className={`${styles.textarea} ${errors.steps ? styles.inputError : ''}`}
+                          placeholder="Tell a little about your food"
+                          value={step}
+                          onChange={e => handleStepChange(idx, e.target.value)}
+                        />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          style={{ display: 'none' }}
+                          id={`step-image-input-${idx}`}
+                          onChange={e => {
+                            if (e.target.files && e.target.files[0]) {
+                              handleStepImageChange(idx, e.target.files[0]);
+                            }
+                          }}
+                        />
+                        <button
+                          className={styles.cameraBtn}
+                          type="button"
+                          onClick={() => document.getElementById(`step-image-input-${idx}`)?.click()}
+                        >
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="7" width="18" height="12" rx="3" stroke="#BFC8D7" strokeWidth="2"/>
+                            <circle cx="12" cy="13" r="3" stroke="#BFC8D7" strokeWidth="2"/>
+                            <path d="M9 7V5C9 4.44772 9.44772 4 10 4H14C14.5523 4 15 4.44772 15 5V7" stroke="#BFC8D7" strokeWidth="2"/>
+                          </svg>
+                        </button>
+                        {stepImages[idx] && (
+                          <img
+                            src={stepImages[idx] as string}
+                            alt={`Step ${idx + 1} preview`}
+                            className={styles.stepImagePreview}
+                            style={{ width: 40, height: 40, borderRadius: 8, marginLeft: 8, objectFit: 'cover' }}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+          {errors.steps && <div className={styles.errorText}>{errors.steps}</div>}
+          <button className={styles.addStepBtn} onClick={handleAddStep}>+ Step</button>
+        </div>
+        <div className={styles.buttonRow}>
+          <button className={styles.backBtn} onClick={onBack}>Back</button>
+          <button className={styles.nextBtn} onClick={handleNext}>Next</button>
+        </div>
+      </div>
+    </DragDropContext>
+  );
+} 

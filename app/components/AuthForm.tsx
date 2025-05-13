@@ -40,12 +40,12 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setFormLoading(true);
     try {
-      if (isLogin) {
+    if (isLogin) {
         // TODO: Implement actual login logic here
         console.log('Login data:', data);
-        router.push("/home");
-      } else {
-        router.push("./check-email?type=signup");
+      router.push("/home");
+    } else {
+      router.push("./check-email?type=signup");
       }
     } finally {
       setFormLoading(false);

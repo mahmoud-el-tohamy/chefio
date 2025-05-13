@@ -78,20 +78,20 @@ const NotificationsPage = () => {
         <title>Chefio | Notifications</title>
         <meta name="description" content="View your latest notifications on Chefio." />
       </Head>
-      <div className={styles.container}>
-        <h1 className={styles.pageTitle}>Notifications</h1>
-        
-        {renderSection('New', groupedNotifications.new)}
-        {renderSection('Today', groupedNotifications.today)}
-        {renderSection('Yesterday', groupedNotifications.yesterday)}
-        {renderSection('Older', groupedNotifications.older)}
-        
-        {Object.values(groupedNotifications).every(arr => arr.length === 0) && (
-          <div className={styles.emptyState}>
-            <p>No notifications yet</p>
-          </div>
-        )}
-      </div>
+    <div className={styles.container}>
+      <h1 className={styles.pageTitle}>Notifications</h1>
+      
+      {renderSection('New', groupedNotifications.new)}
+      {renderSection('Today', groupedNotifications.today)}
+      {renderSection('Yesterday', groupedNotifications.yesterday)}
+      {renderSection('Older', groupedNotifications.older)}
+      
+      {Object.values(groupedNotifications).every(arr => arr.length === 0) && (
+        <div className={styles.emptyState}>
+          <p>No notifications yet</p>
+        </div>
+      )}
+    </div>
     </>
   );
 };

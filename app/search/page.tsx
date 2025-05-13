@@ -63,17 +63,17 @@ export default function SearchPage() {
         <title>Chefio | Search</title>
         <meta name="description" content="Search for recipes on Chefio." />
       </Head>
-      <div className={styles.container}>
-        <div className={styles.header}>
-          <Link href="/home" className={styles.backButton}>
-            <Image
-              src="/icons/arrow-left.svg"
-              alt="Back"
-              width={24}
-              height={24}
-            />
-            <span>All Recipes</span>
-          </Link>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <Link href="/home" className={styles.backButton}>
+          <Image
+            src="/icons/arrow-left.svg"
+            alt="Back"
+            width={24}
+            height={24}
+          />
+          <span>All Recipes</span>
+        </Link>
           <SearchBar
             value={searchQuery}
             onChange={setSearchQuery}
