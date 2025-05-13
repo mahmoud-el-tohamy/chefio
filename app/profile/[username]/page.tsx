@@ -8,7 +8,6 @@ import { useParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import { currentUser } from "@/constants/currentUser";
 
-// Mock data for demonstration
 const mockUser = {
   username: "choirul",
   name: "Choirul Syafril",
@@ -17,7 +16,7 @@ const mockUser = {
   following: 782,
   followers: 1287,
   isFollowing: false,
-  isCurrentUser: false, // Set to true if viewing own profile
+  isCurrentUser: false,
   recipesList: [
     { id: 1, title: "Pancake", image: "/pancake.jpg", duration: ">60 mins" },
     { id: 2, title: "Salad", image: "/salad.jpg", duration: ">60 mins" },
