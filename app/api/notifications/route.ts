@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { GroupedNotifications } from '@/app/types/notification';
+import { GroupedNotifications } from '@/types/notification';
 import { isToday, isYesterday, subDays } from 'date-fns';
 
 // Store notifications in memory (replace with database in production)
@@ -15,7 +15,9 @@ let mockNotifications = [
       }
     ],
     timestamp: new Date().toISOString(),
-    isRead: false
+    isRead: false,
+    message: 'Dean Winchester is now following you',
+    userId: '1'
   },
   {
     id: '2',

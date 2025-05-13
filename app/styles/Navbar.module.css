@@ -90,6 +90,20 @@
   padding: 0 4px;
 }
 
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  margin-left: 8px;
+  z-index: 120;
+}
+
+.mobileMenu {
+  display: none;
+}
+
 /* Desktop */
 @media (max-width: 1440px) {
   .navbar {
@@ -111,7 +125,19 @@
 /* Mobile */
 @media (max-width: 768px) {
   .navbar {
-    padding: 1rem 1rem;
+    padding: 2rem;
+    min-height: 48px;
+    height: 48px;
+  }
+  .logoContainer img, .logoContainer {
+    width: 20px !important;
+    height: 41px !important;
+    min-width: 32px;
+    min-height: 40px;
+  }
+
+  .logoContainer {
+    margin: 6px;
   }
 
   .logoText {
@@ -119,19 +145,62 @@
   }
 
   .navIcons {
-    gap: 1rem;
+    display: none;
   }
 
-  .navLink {
-    width: 36px;
-    height: 36px;
+  .hamburger {
+    display: block;
   }
+
+  .mobileMenu {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 64px;
+    right: 0;
+    left: 0;
+    background: #fff;
+    box-shadow: 0 4px 24px rgba(44, 62, 92, 0.13);
+    z-index: 110;
+    padding: 1.5rem 1rem 2rem 1rem;
+    gap: 1.5rem;
+    animation: slideDown 0.2s ease;
+  }
+
+  .mobileNavLink, .mobileNotificationButton {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2E3E5C;
+    background: none;
+    border: none;
+    padding: 0.5rem 0;
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background 0.2s;
+  }
+
+  .mobileNavLink:hover, .mobileNotificationButton:hover {
+    background: #F4F5F7;
+  }
+
+  .mobileNotificationButton {
+    position: relative;
+  }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Small Mobile */
 @media (max-width: 480px) {
   .navbar {
-    padding: 1rem;
+    padding: 1.7rem;
   }
 
   .logoContainer {

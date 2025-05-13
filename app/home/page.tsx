@@ -7,19 +7,8 @@ import SearchBar from "@/components/common/SearchBar";
 import SearchResults from "@/components/SearchResults";
 import { mockRecipes } from "@/data/mockRecipes";
 import styles from "@/styles/HomePage.module.css";
-
-interface Recipe {
-  id: string;
-  title: string;
-  image: string;
-  author: {
-    name: string;
-    avatar: string;
-  };
-  category: string;
-  duration: string;
-  isLiked?: boolean;
-}
+import { Recipe } from "@/types";
+import Head from "next/head";
 
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -29,6 +18,7 @@ const HomePage = () => {
   const [showResults, setShowResults] = useState(false);
   const [searchResults, setSearchResults] = useState<Recipe[]>([]);
   const [likedRecipes, setLikedRecipes] = useState<Set<string>>(new Set());
+
 
   const filteredByCategory = mockRecipes.map(recipe => ({
     ...recipe,
@@ -95,42 +85,48 @@ const HomePage = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <Navbar />
-      <main className={styles.main}>
-        <div className={styles.topSection}>
-          <div className={styles.filterSection}>
-            <h2 className={styles.categoryTitle}>Category</h2>
-            <CategoryFilter
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
+    <>
+      <Head>
+        <title>Chefio | Home</title>
+        <meta name="description" content="Discover, share, and save your favorite recipes on Chefio." />
+      </Head>
+      <div className={styles.container}>
+        <Navbar />
+        <main className={styles.main}>
+          <div className={styles.topSection}>
+            <div className={styles.filterSection}>
+              <h2 className={styles.categoryTitle}>Category</h2>
+              <CategoryFilter
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+              />
+            </div>
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSearch={handleSearch}
+              onFilter={handleFilter}
             />
           </div>
-          <SearchBar
-            value={searchQuery}
-            onChange={setSearchQuery}
-            onSearch={handleSearch}
-            onFilter={handleFilter}
-          />
-        </div>
-        {!showResults ? (
-          <RecipeGrid 
-            recipes={filteredByCategory}
-            onToggleLike={handleToggleLike}
-          />
-        ) : (
-          <SearchResults
-            query={executedQuery}
-            results={searchResults.filter(recipe => 
-              selectedCategory === "All" || recipe.category === selectedCategory
-            )}
-            isVisible={true}
-            onToggleLike={handleToggleLike}
-            onClearSearch={clearSearch}
-          />
-        )}
-      </main>
-    </div>
+          {!showResults ? (
+            <RecipeGrid 
+              recipes={filteredByCategory}
+              onToggleLike={handleToggleLike}
+            />
+          ) : (
+            <SearchResults
+              query={executedQuery}
+              results={searchResults.filter(recipe => 
+                selectedCategory === "All" || recipe.category === selectedCategory
+              )}
+              isVisible={true}
+              onToggleLike={handleToggleLike}
+              onClearSearch={clearSearch}
+            />
+          )}
+        </main>
+      </div>
+    </>
   );
 };
 

@@ -7,8 +7,23 @@ import Button from "@/components/Button";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import { currentUser } from "@/constants/currentUser";
+import { Recipe } from "@/types";
+import Head from "next/head";
 
-const mockUser = {
+interface UserProfile {
+  username: string;
+  name: string;
+  avatar: string;
+  recipes: number;
+  following: number;
+  followers: number;
+  isFollowing: boolean;
+  isCurrentUser: boolean;
+  recipesList: Recipe[];
+  likedList: Recipe[];
+}
+
+const mockUser: UserProfile = {
   username: "choirul",
   name: "Choirul Syafril",
   avatar: "/profile-avatar.jpg",
@@ -18,13 +33,13 @@ const mockUser = {
   isFollowing: false,
   isCurrentUser: false,
   recipesList: [
-    { id: 1, title: "Pancake", image: "/pancake.jpg", duration: ">60 mins" },
-    { id: 2, title: "Salad", image: "/salad.jpg", duration: ">60 mins" },
-    { id: 3, title: "Salad", image: "/salad2.jpg", duration: ">60 mins" },
-    { id: 4, title: "Pancake", image: "/pancake2.jpg", duration: ">60 mins" },
+    { id: "1", title: "Pancake", image: "/pancake.jpg", duration: ">60 mins", author: { name: "Choirul Syafril", avatar: "/profile-avatar.jpg" }, category: "Breakfast" },
+    { id: "2", title: "Salad", image: "/salad.jpg", duration: ">60 mins", author: { name: "Choirul Syafril", avatar: "/profile-avatar.jpg" }, category: "Lunch" },
+    { id: "3", title: "Salad", image: "/salad2.jpg", duration: ">60 mins", author: { name: "Choirul Syafril", avatar: "/profile-avatar.jpg" }, category: "Lunch" },
+    { id: "4", title: "Pancake", image: "/pancake2.jpg", duration: ">60 mins", author: { name: "Choirul Syafril", avatar: "/profile-avatar.jpg" }, category: "Breakfast" },
   ],
   likedList: [
-    { id: 5, title: "Waffles", image: "/waffles.jpg", duration: ">60 mins" },
+    { id: "5", title: "Waffles", image: "/waffles.jpg", duration: ">60 mins", author: { name: "Choirul Syafril", avatar: "/profile-avatar.jpg" }, category: "Breakfast" },
   ],
 };
 
@@ -33,13 +48,19 @@ const ProfilePage = () => {
   const [tab, setTab] = useState("recipes");
   const [isFollowing, setIsFollowing] = useState(mockUser.isFollowing);
 
+
   // Determine if this is the current user's profile
   const isCurrentUser = username === currentUser.username;
 
   const handleFollow = () => setIsFollowing((prev) => !prev);
 
+
   return (
     <>
+      <Head>
+        <title>Chefio | Profile</title>
+        <meta name="description" content={`View the profile and recipes of ${mockUser.name} on Chefio.`} />
+      </Head>
       <Navbar />
       <div className={styles.profileContainer}>
         <header className={styles.header}>
@@ -78,9 +99,10 @@ const ProfilePage = () => {
                 text={isFollowing ? "Following" : "Follow"}
                 onClick={handleFollow}
                 className={styles.followBtn}
+                aria-label={isFollowing ? `Unfollow ${mockUser.name}` : `Follow ${mockUser.name}`}
               />
             )}
-            <button className={styles.shareBtn} title="Share profile">
+            <button className={styles.shareBtn} title="Share profile" aria-label="Share profile">
               <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="18" cy="5" r="3"/>

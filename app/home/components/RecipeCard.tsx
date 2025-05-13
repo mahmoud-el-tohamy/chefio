@@ -3,28 +3,19 @@ import React from 'react';
 import Link from 'next/link';
 import styles from '@/styles/home/RecipeCard.module.css';
 import Image from 'next/image';
+import { Recipe } from "@/types";
 
 interface RecipeCardProps {
-  recipe: {
-    id: string;
-    title: string;
-    image: string;
-    cookingTime: string;
-    author: {
-      id: string;
-      name: string;
-      image?: string;
-    };
-  };
+  recipe: Recipe;
 }
 
 const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
   return (
-    <Link href={`/recipe/${recipe.id}`} className={styles.card}>
+    <Link href={`/recipe/${recipe.id}`} className={styles.card} aria-label={`View details for ${recipe.title}`}>
       <div className={styles.imageContainer}>
         <Image
           src={recipe.image}
-          alt={recipe.title}
+          alt={`Image of ${recipe.title}`}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className={styles.image}
@@ -39,8 +30,8 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
               <Image
                 width={32}
                 height={32}
-                src="/Images/anonymous.png"
-                alt={recipe.author.name}
+                src={recipe.author.avatar || "/Images/anonymous.png"}
+                alt={`Avatar of ${recipe.author.name}`}
                 className={styles.image}
               />
             </div>

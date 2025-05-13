@@ -4,19 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import styles from '@/styles/SearchResults.module.css';
-
-interface Recipe {
-  id: string;
-  title: string;
-  image: string;
-  author: {
-    name: string;
-    avatar: string;
-  };
-  category: string;
-  duration: string;
-  isLiked?: boolean;
-}
+import { Recipe } from "@/types";
 
 interface SearchResultsProps {
   query?: string;
@@ -43,6 +31,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             onClick={onClearSearch} 
             className={styles.backButton}
             type="button"
+            aria-label="Back to all recipes"
           >
             <Image
               src="/icons/arrow-left.svg"
@@ -64,13 +53,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             <div className={styles.imageContainer}>
               <Image
                 src={recipe.image}
-                alt={recipe.title}
+                alt={`Image of ${recipe.title}`}
                 fill
                 className={styles.image}
               />
               <button 
                 className={`${styles.favoriteButton} ${recipe.isLiked ? styles.liked : ''}`}
                 onClick={() => onToggleLike(recipe.id)}
+                aria-label={recipe.isLiked ? `Remove ${recipe.title} from favorites` : `Add ${recipe.title} to favorites`}
               >
                 <Image
                   src={recipe.isLiked ? "/icons/heart-filled.svg" : "/icons/heart.svg"}
@@ -84,7 +74,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             <div className={styles.authorInfo}>
               <Image
                 src={recipe.author.avatar}
-                alt={recipe.author.name}
+                alt={`Avatar of ${recipe.author.name}`}
                 width={32}
                 height={32}
                 className={styles.avatar}

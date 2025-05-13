@@ -10,6 +10,7 @@ import { currentUser } from '@/constants/currentUser';
 import { usePathname } from "next/navigation";
 import HomeIcon from "@/components/icons/HomeIcon";
 import ProfileIcon from "@/components/icons/ProfileIcon";
+import MenuIcon from "@/components/icons/MenuIcon";
 
 function Navbar() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -19,6 +20,7 @@ function Navbar() {
     yesterday: [],
     older: []
   });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
   const fetchNotifications = async () => {
@@ -83,6 +85,16 @@ function Navbar() {
         </Link>
       </div>
 
+      <button
+        className={styles.hamburger}
+        aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+        aria-expanded={mobileMenuOpen}
+        aria-controls="mobile-menu"
+        onClick={() => setMobileMenuOpen((prev) => !prev)}
+      >
+        <MenuIcon open={mobileMenuOpen} />
+      </button>
+
       <div className={styles.navIcons}>
         <Link
           href="/home"
@@ -123,6 +135,60 @@ function Navbar() {
           )}
         </button>
       </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className={styles.mobileMenu} id="mobile-menu" role="menu">
+          <Link
+            href="/home"
+            className={styles.mobileNavLink}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <HomeIcon className={pathname === "/home" ? styles.active : undefined} />
+            Home
+          </Link>
+          <Link
+            href="/create-recipe"
+            className={styles.mobileNavLink}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <Image
+              src="/icons/edit.svg"
+              alt="Create Recipe"
+              width={24}
+              height={24} />
+            Create Recipe
+          </Link>
+          <Link
+            href={`/profile/${currentUser.username}`}
+            className={styles.mobileNavLink}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <ProfileIcon className={pathname.startsWith("/profile") ? styles.active : undefined} />
+            Profile
+          </Link>
+          <button
+            className={styles.mobileNotificationButton}
+            onClick={() => {
+              handleNotificationsToggle();
+              setMobileMenuOpen(false);
+            }}
+            aria-label={`Notifications ${notifications.new.length > 0 ? `(${notifications.new.length} new)` : ''}`}
+          >
+            <Image
+              src="/icons/notification.svg"
+              alt="Notifications"
+              width={24}
+              height={24} />
+            Notifications
+            {notifications.new.length > 0 && (
+              <span className={styles.notificationBadge}>
+                {notifications.new.length}
+              </span>
+            )}
+          </button>
+        </div>
+      )}
 
       <NotificationsDropdown
         isOpen={isNotificationsOpen}

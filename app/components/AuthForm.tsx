@@ -6,21 +6,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation"; // لاستخدام التوجيه (routing) في app router
 import styles from "../styles/auth.module.css";
-
-interface AuthFormProps {
-  type: "login" | "signup";
-}
-
-interface FormValues {
-  email: string;
-  password: string;
-  username?: string;
-}
+import { AuthFormProps, FormValues } from "@/types/auth";
 
 const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   const router = useRouter();
   const isLogin = type === "login";
   const [showPassword, setShowPassword] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
 
   // react-hook-form
   const {
@@ -40,26 +32,23 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   const hasDigit = /\d/.test(passwordValue);
   const hasSpecialChar = /[@$!%*?&#]/.test(passwordValue);
   const isMinLength = passwordValue.length >= 8;
-  const areAllRequirementsMet =
-    hasLowerCase &&
-    hasUpperCase &&
-    hasDigit &&
-    hasSpecialChar &&
-    isMinLength &&
-    /^[A-Za-z0-9_.]+$/.test(usernameValue);
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    console.log("Form Data:", data);
-
-    if (isLogin) {
-      // عند تسجيل الدخول يتم التوجيه إلى صفحة home
-      router.push("/home");
-    } else {
-      router.push("./check-email?type=signup");
+    setFormLoading(true);
+    try {
+      if (isLogin) {
+        // TODO: Implement actual login logic here
+        console.log('Login data:', data);
+        router.push("/home");
+      } else {
+        router.push("./check-email?type=signup");
+      }
+    } finally {
+      setFormLoading(false);
     }
   };
 
@@ -72,7 +61,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
       <p className={styles.subtitle}>Please enter your account here</p>
 
-      <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+      <form className={styles.form} onSubmit={handleSubmit(onSubmit)} aria-label={isLogin ? "Login form" : "Signup form"}>
         {/* حقل الإيميل */}
         <div className={styles.inputGroup}>
           <div className={styles.inputAndIcon}>
@@ -90,6 +79,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               placeholder="Email or phone number"
               className={styles.input}
               autoComplete="email"
+              aria-label="Email or phone number"
               {...register("email", {
                 required: "Email is required",
                 pattern: {
@@ -122,6 +112,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
                 placeholder="Username"
                 className={styles.input}
                 autoComplete="username"
+                aria-label="Username"
                 {...register("username", {
                   required: "Username is required",
                   validate: {
@@ -157,6 +148,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               className={styles.input}
+              aria-label="Password"
               {...register("password", {
                 required: "Password is required",
                 pattern: {
@@ -183,7 +175,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
           </div>
           <div className={styles.errorAndForgot}>
             {isLogin && (
-              <Link href="../auth/forgot" className={styles.forgotPassword}>
+              <Link href="../auth/forgot" className={styles.forgotPassword} aria-label="Forgot password?">
                 Forgot password?
               </Link>
             )}
@@ -231,21 +223,22 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
         <button
           type="submit"
           className={styles.primaryButton}
-          disabled={!isLogin && !areAllRequirementsMet}
+          aria-label={isLogin ? "Login" : "Sign up"}
+          disabled={formLoading}
         >
-          {isLogin ? "Login" : "Sign Up"}
+          {formLoading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
         </button>
 
         <p className={styles.or}>Or continue with</p>
 
-        <button type="button" className={styles.googleButton}>
+        <button type="button" className={styles.googleButton} aria-label="Sign in with Google">
           Google
         </button>
 
         {/* رابط التنقل بين Login و Sign Up */}
         <p className={styles.switchAuth}>
-          {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-          <Link href={isLogin ? "./signup" : "./login"} className={styles.link}>
+          {isLogin ? "Don't have an account?" : "Already have an account?"} {" "}
+          <Link href={isLogin ? "./signup" : "./login"} className={styles.link} aria-label={isLogin ? "Go to sign up" : "Go to login"}>
             {isLogin ? "Sign Up" : "Login"}
           </Link>
         </p>
