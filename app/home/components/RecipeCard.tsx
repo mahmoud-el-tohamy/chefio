@@ -11,7 +11,7 @@ interface RecipeCardProps {
 
 const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
   return (
-    <Link href={`/recipe/${recipe.id}`} className={styles.card} aria-label={`View details for ${recipe.title}`}>
+    <Link href={`/recipes/${recipe.id}`} className={styles.card} aria-label={`View details for ${recipe.title}`}>
       <div className={styles.imageContainer}>
         <Image
           src={recipe.image}

@@ -18,4 +18,4 @@ export interface GroupedNotifications {
   today: Notification[];
   yesterday: Notification[];
   older: Notification[];
-}
+} 

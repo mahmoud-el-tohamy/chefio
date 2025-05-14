@@ -9,6 +9,7 @@ import { mockRecipes } from "@/data/mockRecipes";
 import styles from "@/styles/HomePage.module.css";
 import { Recipe } from "@/types";
 import Head from "next/head";
+import Link from "next/link";
 
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");

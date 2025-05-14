@@ -9,6 +9,7 @@ import Navbar from "@/components/layout/Navbar";
 import { currentUser } from "@/constants/currentUser";
 import { Recipe } from "@/types";
 import Head from "next/head";
+import Link from "next/link";
 
 interface UserProfile {
   username: string;
@@ -240,7 +241,7 @@ const ProfilePage = () => {
         </div>
         <div className={styles.recipeGrid}>
           {(tab === "recipes" ? mockUser.recipesList : mockUser.likedList).map((recipe) => (
-            <div key={recipe.id} className={styles.recipeCard}>
+            <Link key={recipe.id} href={`/recipes/${recipe.id}`} className={styles.recipeCard} aria-label={`View details for ${recipe.title}`}>
               <Image
                 src={recipe.image}
                 alt={recipe.title}
@@ -250,7 +251,7 @@ const ProfilePage = () => {
               />
               <div className={styles.recipeTitle}>{recipe.title}</div>
               <div className={styles.recipeDuration}>Food • {recipe.duration}</div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

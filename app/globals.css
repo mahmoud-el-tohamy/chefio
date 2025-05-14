@@ -62,3 +62,28 @@ input[type="submit"]:disabled {
   0% { transform: rotate(0deg);}
   100% { transform: rotate(360deg);}
 }
+
+/* Webkit browsers */
+::-webkit-scrollbar {
+  width: 12px;
+  background: var(--outline-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #17a96a; /* Slightly darker than --primary-color */
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--outline-color);
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) var(--outline-color);
+}

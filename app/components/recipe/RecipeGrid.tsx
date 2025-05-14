@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import styles from '@/styles/RecipeGrid.module.css';
 import { Recipe } from "@/types";
+import Link from 'next/link';
 
 interface RecipeGridProps {
   recipes: Recipe[];
@@ -14,7 +15,7 @@ const RecipeGrid: React.FC<RecipeGridProps> = ({ recipes, onToggleLike }) => {
   return (
     <div className={styles.grid}>
       {recipes.map((recipe) => (
-        <div key={recipe.id} className={styles.recipeCard}>
+        <Link key={recipe.id} href={`/recipes/${recipe.id}`} className={styles.recipeCard} aria-label={`View details for ${recipe.title}`}>
           <div className={styles.imageContainer}>
             <Image
               src={recipe.image}
@@ -24,7 +25,7 @@ const RecipeGrid: React.FC<RecipeGridProps> = ({ recipes, onToggleLike }) => {
             />
             <button 
               className={`${styles.favoriteButton} ${recipe.isLiked ? styles.liked : ''}`}
-              onClick={() => onToggleLike(recipe.id)}
+              onClick={(e) => { e.preventDefault(); onToggleLike(recipe.id); }}
               aria-label={recipe.isLiked ? `Remove ${recipe.title} from favorites` : `Add ${recipe.title} to favorites`}
             >
               <Image
@@ -54,7 +55,7 @@ const RecipeGrid: React.FC<RecipeGridProps> = ({ recipes, onToggleLike }) => {
             <span>•</span>
             <span>{recipe.duration}</span>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

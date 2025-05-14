@@ -1,0 +1,275 @@
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem 1rem;
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--main-text-color);
+  margin-bottom: 1.5rem;
+  margin-top: 4rem;
+  letter-spacing: 0.01em;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem 3rem;
+}
+
+@media (max-width: 900px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.imageWrapper {
+  flex-shrink: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+  width: 260px;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recipeImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.authorRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--outline-color);
+}
+
+.authorName {
+  font-weight: 600;
+  color: var(--main-text-color);
+  font-size: 1rem;
+}
+
+.likeButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  color: var(--main-text-color);
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 2rem 0.5rem 1.2rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+  margin-left: 1rem;
+  box-shadow: none;
+  min-width: 120px;
+  min-height: 44px;
+  justify-content: center;
+}
+.likeButton:hover, .likeButton.liked {
+  background: #f4f5f7;
+  color: var(--primary-color);
+}
+.likeIcon {
+  display: flex;
+  align-items: center;
+  margin-right: 0.5rem;
+}
+.likeCount {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: inherit;
+}
+
+.categoryRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--secondary-text-color);
+  font-size: 0.95rem;
+}
+.category {
+  font-weight: 500;
+}
+.dot {
+  font-size: 1.2rem;
+  color: var(--outline-color);
+}
+.duration {
+  color: var(--secondary-text-color);
+}
+
+.descriptionBox {
+  margin-top: 1.5rem;
+  background: #f9f9f9;
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.sectionTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--main-text-color);
+  margin-bottom: 0.7rem;
+}
+.descriptionText {
+  color: var(--secondary-text-color);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.ingredientsBox {
+  background: #f9f9f9;
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.ingredientsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.ingredientItem {
+  display: flex;
+  align-items: center;
+  font-size: 1.08rem;
+  color: var(--main-text-color);
+  margin-bottom: 0.6rem;
+  font-weight: 500;
+}
+.checkIcon {
+  color: var(--primary-color);
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+}
+
+.stepsBox {
+  background: #f9f9f9;
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.stepsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.stepItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.stepNumber {
+  min-width: 32px;
+  min-height: 32px;
+  background: var(--main-text-color);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-top: 0.2rem;
+}
+.stepContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.stepText {
+  color: var(--main-text-color);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+.stepImage {
+  width: 180px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-top: 0.3rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+@media (max-width: 900px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .imageWrapper {
+    width: 100%;
+    height: 220px;
+  }
+  .recipeImage {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  .main {
+    padding: 1rem 0.2rem 2rem 0.2rem;
+  }
+  .contentGrid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .imageWrapper {
+    width: 100%;
+    height: 180px;
+  }
+  .recipeImage {
+    width: 100%;
+    height: 100%;
+  }
+  .descriptionBox, .ingredientsBox, .stepsBox {
+    padding: 1rem 0.7rem;
+  }
+  .stepImage {
+    width: 100%;
+    height: 100px;
+  }
+} 

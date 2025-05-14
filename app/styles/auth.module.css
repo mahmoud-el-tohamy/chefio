@@ -263,3 +263,10 @@
   outline-offset: 2px;
   border-radius: 0.25rem;
 }
+
+button:disabled,
+input[type="submit"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
