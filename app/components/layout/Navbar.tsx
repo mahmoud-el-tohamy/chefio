@@ -77,6 +77,8 @@ function Navbar() {
     }
   };
 
+  const isOwnProfile = pathname === `/profile/${currentUser.username}`;
+
   return (
     <nav className={styles.navbar}>
       <div className={styles.logo}>
@@ -125,7 +127,7 @@ function Navbar() {
           href={`/profile/${currentUser.username}`}
           className={styles.navLink}
         >
-          <ProfileIcon className={pathname.startsWith("/profile") ? styles.active : undefined} />
+          <ProfileIcon className={isOwnProfile ? styles.active : undefined} />
         </Link>
         <button
           className={styles.notificationButton}

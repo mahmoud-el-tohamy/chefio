@@ -49,7 +49,7 @@ const mockUser: UserProfile = {
         following: 782,
         followers: 1287
       }, 
-      category: "Breakfast",
+      category: "Food",
       description: "Delicious fluffy pancakes",
       ingredients: ["flour", "eggs", "milk"],
       steps: [{ description: "Mix ingredients" }],
@@ -72,7 +72,7 @@ const mockUser: UserProfile = {
         following: 782,
         followers: 1287
       }, 
-      category: "Lunch",
+      category: "Food",
       description: "Fresh garden salad",
       ingredients: ["lettuce", "tomatoes", "cucumber"],
       steps: [{ description: "Chop vegetables" }],
@@ -95,7 +95,7 @@ const mockUser: UserProfile = {
         following: 782,
         followers: 1287
       }, 
-      category: "Lunch",
+      category: "Food",
       description: "Caesar salad",
       ingredients: ["romaine", "croutons", "parmesan"],
       steps: [{ description: "Toss ingredients" }],
@@ -118,7 +118,7 @@ const mockUser: UserProfile = {
         following: 782,
         followers: 1287
       }, 
-      category: "Breakfast",
+      category: "Food",
       description: "Blueberry pancakes",
       ingredients: ["flour", "eggs", "milk", "blueberries"],
       steps: [{ description: "Mix and add blueberries" }],
@@ -143,7 +143,7 @@ const mockUser: UserProfile = {
         following: 782,
         followers: 1287
       }, 
-      category: "Breakfast",
+      category: "Food",
       description: "Crispy waffles",
       ingredients: ["flour", "eggs", "milk", "butter"],
       steps: [{ description: "Mix and cook in waffle iron" }],

@@ -19,10 +19,6 @@ export const ROUTES = {
 
 export const CATEGORIES = [
   'All',
-  'Breakfast',
-  'Lunch',
-  'Dinner',
-  'Dessert',
-  'Snacks',
-  'Drinks',
+  'Food',
+  'Drink',
 ] as const; 

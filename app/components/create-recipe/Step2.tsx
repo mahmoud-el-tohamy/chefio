@@ -18,7 +18,6 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number): T[] {
 export default function Step2({ onNext, onBack, onCancel }: Step2Props) {
   const [ingredients, setIngredients] = useState(['', '', '']);
   const [steps, setSteps] = useState(['']);
-  const [stepImages, setStepImages] = useState<(string | null)[]>(['']);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleIngredientChange = (idx: number, value: string) => {
@@ -37,13 +36,6 @@ export default function Step2({ onNext, onBack, onCancel }: Step2Props) {
   };
   const handleAddStep = () => {
     setSteps([...steps, '']);
-    setStepImages([...stepImages, null]);
-  };
-
-  const handleStepImageChange = (idx: number, file: File) => {
-    const newImages = [...stepImages];
-    newImages[idx] = URL.createObjectURL(file);
-    setStepImages(newImages);
   };
 
   const onDragEnd = (result: DropResult) => {
@@ -52,7 +44,6 @@ export default function Step2({ onNext, onBack, onCancel }: Step2Props) {
       setIngredients(reorder(ingredients, result.source.index, result.destination.index));
     } else if (result.type === 'step') {
       setSteps(reorder(steps, result.source.index, result.destination.index));
-      setStepImages(reorder(stepImages, result.source.index, result.destination.index));
     }
   };
 
@@ -141,36 +132,6 @@ export default function Step2({ onNext, onBack, onCancel }: Step2Props) {
                           value={step}
                           onChange={e => handleStepChange(idx, e.target.value)}
                         />
-                        <input
-                          type="file"
-                          accept="image/*"
-                          style={{ display: 'none' }}
-                          id={`step-image-input-${idx}`}
-                          onChange={e => {
-                            if (e.target.files && e.target.files[0]) {
-                              handleStepImageChange(idx, e.target.files[0]);
-                            }
-                          }}
-                        />
-                        <button
-                          className={styles.cameraBtn}
-                          type="button"
-                          onClick={() => document.getElementById(`step-image-input-${idx}`)?.click()}
-                        >
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="7" width="18" height="12" rx="3" stroke="#BFC8D7" strokeWidth="2"/>
-                            <circle cx="12" cy="13" r="3" stroke="#BFC8D7" strokeWidth="2"/>
-                            <path d="M9 7V5C9 4.44772 9.44772 4 10 4H14C14.5523 4 15 4.44772 15 5V7" stroke="#BFC8D7" strokeWidth="2"/>
-                          </svg>
-                        </button>
-                        {stepImages[idx] && (
-                          <img
-                            src={stepImages[idx] as string}
-                            alt={`Step ${idx + 1} preview`}
-                            className={styles.stepImagePreview}
-                            style={{ width: 40, height: 40, borderRadius: 8, marginLeft: 8, objectFit: 'cover' }}
-                          />
-                        )}
                       </div>
                     )}
                   </Draggable>

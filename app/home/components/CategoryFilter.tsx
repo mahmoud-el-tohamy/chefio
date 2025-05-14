@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import "../../styles/home/CategoryFilter.css";
+import { CATEGORIES } from "@/constants";
 
 interface CategoryFilterProps {
   selectedCategory: string;
@@ -11,7 +12,7 @@ export default function CategoryFilter({
   selectedCategory,
   setSelectedCategory,
 }: CategoryFilterProps) {
-  const categories = ["All", "Food", "Drink"];
+  const categories = CATEGORIES;
 
   return (
     <div className="category-filter">
