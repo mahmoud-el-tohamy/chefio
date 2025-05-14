@@ -2,16 +2,7 @@
 import React from "react";
 import RecipeCard from "./RecipeCard";
 import "../../styles/home/RecipeGrid.css";
-
-interface Recipe {
-  id: number;
-  title: string;
-  category: string;
-  author: string;
-  avatar: string;
-  imageUrl: string;
-  time: string;
-}
+import { Recipe } from '@/types';
 
 interface RecipeGridProps {
   recipes: Recipe[];

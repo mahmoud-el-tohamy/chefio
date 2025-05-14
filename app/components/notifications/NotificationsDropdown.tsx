@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { GroupedNotifications } from '@/app/types/notification';
+import { GroupedNotifications } from '@/types/notification';
 import NotificationCard from './NotificationCard';
 import styles from '@/styles/notifications/NotificationsDropdown.module.css';
 
@@ -64,7 +64,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
           {renderSection('Yesterday', notifications.yesterday)}
           {renderSection('Older', notifications.older)}
           
-          {Object.values(notifications).every(arr => arr.length === 0) && (
+          {Object.values(notifications).every(arr => (arr as Notification[]).length === 0) && (
             <div className={styles.emptyState}>
               <p>No notifications yet</p>
             </div>

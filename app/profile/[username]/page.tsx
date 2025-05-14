@@ -33,13 +33,123 @@ const mockUser: UserProfile = {
   isFollowing: false,
   isCurrentUser: false,
   recipesList: [
-    { id: "1", title: "Pancake", image: "/pancake.jpg", duration: ">60 mins", author: { name: "Choirul Syafril", avatar: "/profile-avatar.jpg" }, category: "Breakfast" },
-    { id: "2", title: "Salad", image: "/salad.jpg", duration: ">60 mins", author: { name: "Choirul Syafril", avatar: "/profile-avatar.jpg" }, category: "Lunch" },
-    { id: "3", title: "Salad", image: "/salad2.jpg", duration: ">60 mins", author: { name: "Choirul Syafril", avatar: "/profile-avatar.jpg" }, category: "Lunch" },
-    { id: "4", title: "Pancake", image: "/pancake2.jpg", duration: ">60 mins", author: { name: "Choirul Syafril", avatar: "/profile-avatar.jpg" }, category: "Breakfast" },
+    { 
+      id: "1", 
+      title: "Pancake", 
+      image: "/pancake.jpg", 
+      duration: ">60 mins", 
+      author: {
+        id: "1",
+        username: "choirul",
+        name: "Choirul Syafril",
+        avatar: "/profile-avatar.jpg",
+        email: "choirul@example.com",
+        recipes: 32,
+        following: 782,
+        followers: 1287
+      }, 
+      category: "Breakfast",
+      description: "Delicious fluffy pancakes",
+      ingredients: ["flour", "eggs", "milk"],
+      steps: [{ description: "Mix ingredients" }],
+      createdAt: "2024-01-01",
+      updatedAt: "2024-01-01",
+      cookingTime: "30 mins"
+    },
+    { 
+      id: "2", 
+      title: "Salad", 
+      image: "/salad.jpg", 
+      duration: ">60 mins", 
+      author: {
+        id: "1",
+        username: "choirul",
+        name: "Choirul Syafril",
+        avatar: "/profile-avatar.jpg",
+        email: "choirul@example.com",
+        recipes: 32,
+        following: 782,
+        followers: 1287
+      }, 
+      category: "Lunch",
+      description: "Fresh garden salad",
+      ingredients: ["lettuce", "tomatoes", "cucumber"],
+      steps: [{ description: "Chop vegetables" }],
+      createdAt: "2024-01-02",
+      updatedAt: "2024-01-02",
+      cookingTime: "15 mins"
+    },
+    { 
+      id: "3", 
+      title: "Salad", 
+      image: "/salad2.jpg", 
+      duration: ">60 mins", 
+      author: {
+        id: "1",
+        username: "choirul",
+        name: "Choirul Syafril",
+        avatar: "/profile-avatar.jpg",
+        email: "choirul@example.com",
+        recipes: 32,
+        following: 782,
+        followers: 1287
+      }, 
+      category: "Lunch",
+      description: "Caesar salad",
+      ingredients: ["romaine", "croutons", "parmesan"],
+      steps: [{ description: "Toss ingredients" }],
+      createdAt: "2024-01-03",
+      updatedAt: "2024-01-03",
+      cookingTime: "20 mins"
+    },
+    { 
+      id: "4", 
+      title: "Pancake", 
+      image: "/pancake2.jpg", 
+      duration: ">60 mins", 
+      author: {
+        id: "1",
+        username: "choirul",
+        name: "Choirul Syafril",
+        avatar: "/profile-avatar.jpg",
+        email: "choirul@example.com",
+        recipes: 32,
+        following: 782,
+        followers: 1287
+      }, 
+      category: "Breakfast",
+      description: "Blueberry pancakes",
+      ingredients: ["flour", "eggs", "milk", "blueberries"],
+      steps: [{ description: "Mix and add blueberries" }],
+      createdAt: "2024-01-04",
+      updatedAt: "2024-01-04",
+      cookingTime: "35 mins"
+    }
   ],
   likedList: [
-    { id: "5", title: "Waffles", image: "/waffles.jpg", duration: ">60 mins", author: { name: "Choirul Syafril", avatar: "/profile-avatar.jpg" }, category: "Breakfast" },
+    { 
+      id: "5", 
+      title: "Waffles", 
+      image: "/waffles.jpg", 
+      duration: ">60 mins", 
+      author: {
+        id: "1",
+        username: "choirul",
+        name: "Choirul Syafril",
+        avatar: "/profile-avatar.jpg",
+        email: "choirul@example.com",
+        recipes: 32,
+        following: 782,
+        followers: 1287
+      }, 
+      category: "Breakfast",
+      description: "Crispy waffles",
+      ingredients: ["flour", "eggs", "milk", "butter"],
+      steps: [{ description: "Mix and cook in waffle iron" }],
+      createdAt: "2024-01-05",
+      updatedAt: "2024-01-05",
+      cookingTime: "25 mins"
+    }
   ],
 };
 

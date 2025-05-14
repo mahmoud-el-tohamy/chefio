@@ -4,6 +4,7 @@ import { Notification } from '@/types/notification';
 import styles from '@/styles/notifications/NotificationCard.module.css';
 import { formatDistanceToNow } from 'date-fns';
 import Avatar from '../common/Avatar';
+import { User } from '@/types/user';
 
 const DEFAULT_AVATAR = '/Images/anonymous.png';
 
@@ -13,7 +14,7 @@ interface NotificationCardProps {
 
 const NotificationCard: React.FC<NotificationCardProps> = ({ notification }) => {
   const { message, namesDisplay } = useMemo(() => {
-    const userNames = notification.users.map(user => user.name).join(' and ');
+    const userNames = notification.users.map((user: User) => user.name).join(' and ');
     const otherCount = notification.users.length > 2 ? notification.users.length - 2 : 0;
     const names = otherCount > 0 
       ? `${notification.users[0].name}, ${notification.users[1].name} and ${otherCount} others`

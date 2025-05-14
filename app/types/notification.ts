@@ -1,10 +1,6 @@
-export type NotificationType = 'follow' | 'like' | 'comment';
+import { User } from './user';
 
-export interface User {
-  id: string;
-  name: string;
-  image: string;
-}
+export type NotificationType = 'follow' | 'like' | 'comment';
 
 export interface Notification {
   id: string;
@@ -13,6 +9,8 @@ export interface Notification {
   isRead: boolean;
   type: 'like' | 'comment' | 'follow' | 'mention';
   userId: string;
+  users: User[];
+  recipeImage?: string;
 }
 
 export interface GroupedNotifications {
@@ -20,4 +18,4 @@ export interface GroupedNotifications {
   today: Notification[];
   yesterday: Notification[];
   older: Notification[];
-} 
+}

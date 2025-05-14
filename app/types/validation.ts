@@ -23,10 +23,10 @@ export const DEFAULT_VALIDATION_RULES: ValidationRules = {
   username: {
     required: "Username is required",
     validate: {
-      noSpaces: (value: string) =>
+      noSpaces: (value: string | undefined) =>
         /^[A-Za-z0-9_.]+$/.test(value || "") ||
         "Username cannot contain spaces",
-      englishOnly: (value: string) =>
+      englishOnly: (value: string | undefined) =>
         /^[A-Za-z0-9_.]+$/.test(value || "") ||
         "Only letters, numbers, '_' and '.' allowed",
     },
