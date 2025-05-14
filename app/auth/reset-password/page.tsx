@@ -9,14 +9,14 @@ export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // متطلبات الباسوورد
+  // Password requirements
   const isLengthValid = password.length >= 8;
   const containsNumber = /\d/.test(password);
   const containsUppercase = /[A-Z]/.test(password);
   const containsLowercase = /[a-z]/.test(password);
   const containsSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-  // التحقق من استيفاء جميع الشروط
+  // Check if all conditions are met
   const isPasswordValid =
     isLengthValid &&
     containsNumber &&
@@ -31,8 +31,8 @@ export default function ResetPasswordPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isPasswordValid) {
-      // استدعاء API لتحديث كلمة المرور
-      router.push("./login"); // أو صفحة تأكيد/نجاح
+      // Call API to update password
+      router.push("./login"); // Or confirmation/success page
     }
   };
 

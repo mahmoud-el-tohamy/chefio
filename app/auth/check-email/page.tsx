@@ -7,10 +7,10 @@ import styles from "./checkEmail.module.css";
 export default function CheckEmailPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const type = searchParams.get("type"); // 'forgot' أو 'signup'
+  const type = searchParams.get("type"); // 'forgot' or 'signup'
 
   const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const [timeLeft, setTimeLeft] = useState(180); // 3 دقائق = 180 ثانية
+  const [timeLeft, setTimeLeft] = useState(180); // 3 minutes = 180 seconds
   const [isResendDisabled, setIsResendDisabled] = useState(true);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);

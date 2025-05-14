@@ -1,10 +1,10 @@
-/* جعل الصفحة بأكملها في المنتصف رأسيًا وأفقيًا */
+/* Center the entire page vertically and horizontally */
 .container {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* توسيط رأسي */
-  align-items: center; /* توسيط أفقي */
-  min-height: 100vh; /* تملأ الشاشة بالكامل */
+  justify-content: center; /* Vertical centering */
+  align-items: center; /* Horizontal centering */
+  min-height: 100vh; /* Fill the entire screen */
   text-align: center;
 }
 
@@ -19,7 +19,7 @@
   margin-bottom: 1.5rem;
 }
 
-/* حاوية الخانات الستة */
+/* Container for the six boxes */
 .codeContainer {
   display: flex;
   justify-content: center;
@@ -27,7 +27,7 @@
   margin-bottom: 1rem;
 }
 
-/* تنسيق الحقول */
+/* Field styling */
 .codeInput {
   width: 50px;
   height: 50px;
@@ -39,12 +39,12 @@
   transition: border-color 0.2s;
 }
 
-/* عند التركيز يصبح الإطار باللون الأساسي */
+/* On focus, border becomes primary color */
 .codeInput:focus {
-  border-color: var(--primary-color); /* أو استخدم #1FCC79 مثلاً */
+  border-color: var(--primary-color); /* Or use #1FCC79 for example */
 }
 
-/* العد التنازلي */
+/* Countdown timer */
 .expireText {
   color: #999;
   margin-bottom: 1rem;
@@ -55,7 +55,7 @@
   font-weight: bold;
 }
 
-/* زر Verify */
+/* Verify button */
 .verifyButton {
   background-color: var(--primary-color);
   color: #fff;
@@ -71,7 +71,7 @@
   background-color: #17a96a;
 }
 
-/* زر Send again */
+/* Send again button */
 .sendAgainButton {
   background-color: transparent;
   border: 1px solid #ddd;

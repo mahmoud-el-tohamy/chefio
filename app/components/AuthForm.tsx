@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation"; // لاستخدام التوجيه (routing) في app router
+import { useRouter } from "next/navigation"; // For routing in app router
 import styles from "../styles/auth.module.css";
 import { AuthFormProps, FormValues } from "@/types/auth";
 
@@ -23,10 +23,10 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   } = useForm<FormValues>();
 
   const passwordValue = watch("password") || "";
-  // تعريف usernameValue باستخدام watch
+  // Define usernameValue using watch
   const usernameValue: string = watch("username") || "";
 
-  // شروط كلمة المرور:
+  // Password requirements:
   const hasLowerCase = /[a-z]/.test(passwordValue);
   const hasUpperCase = /[A-Z]/.test(passwordValue);
   const hasDigit = /\d/.test(passwordValue);
@@ -62,7 +62,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
       <p className={styles.subtitle}>Please enter your account here</p>
 
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)} aria-label={isLogin ? "Login form" : "Signup form"}>
-        {/* حقل الإيميل */}
+        {/* Email field */}
         <div className={styles.inputGroup}>
           <div className={styles.inputAndIcon}>
             <div className={styles.iconWrapper}>
@@ -94,13 +94,13 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
           )}
         </div>
 
-        {/* حقل الـ username يظهر فقط عند Sign Up */}
+        {/* Username field appears only when Sign Up */}
         {!isLogin && (
           <div className={styles.inputGroup}>
             <div className={styles.inputAndIcon}>
               <div className={styles.iconWrapper}>
                 <Image
-                  src="/icons/user.svg" // تأكد من وجود أيقونة user.svg في /public/icons
+                  src="/icons/user.svg" // Make sure user.svg exists in /public/icons
                   alt="User Icon"
                   width={20}
                   height={20}
@@ -132,7 +132,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
           </div>
         )}
 
-        {/* حقل الباسوورد */}
+        {/* Password field */}
         <div className={styles.inputGroup}>
           <div className={styles.inputAndIcon}>
             <div className={styles.iconWrapper}>
@@ -185,7 +185,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
           </div>
         </div>
 
-        {/* قائمة متطلبات كلمة المرور (للـ Sign Up) */}
+        {/* Password requirements (for Sign Up) */}
         {!isLogin && (
           <div className={styles.passwordRequirements}>
             <ul>
@@ -235,7 +235,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
           Google
         </button>
 
-        {/* رابط التنقل بين Login و Sign Up */}
+        {/* Link to navigate between Login and Sign Up */}
         <p className={styles.switchAuth}>
           {isLogin ? "Don't have an account?" : "Already have an account?"} {" "}
           <Link href={isLogin ? "./signup" : "./login"} className={styles.link} aria-label={isLogin ? "Go to sign up" : "Go to login"}>
