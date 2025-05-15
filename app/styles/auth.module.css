@@ -264,8 +264,8 @@
   border-radius: 0.25rem;
 }
 
-button:disabled,
-input[type="submit"]:disabled {
+.authForm button:disabled,
+.authForm input[type="submit"]:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
