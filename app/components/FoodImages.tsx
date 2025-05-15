@@ -7,16 +7,16 @@ interface FoodImage {
   top: number;
   left: number;
 }
-
+//m
 const foodImages: FoodImage[] = [
-  { src: "/Images/food1.jpg", alt: "Food 1", top: 10, left: 20 },
-  { src: "/Images/food2.jpg", alt: "Food 2", top: 20, left: 80 },
-  { src: "/Images/food3.jpg", alt: "Food 3", top: 30, left: 50 },
-  { src: "/Images/food4.jpg", alt: "Food 4", top: 40, left: 30 },
-  { src: "/Images/food5.jpg", alt: "Food 5", top: 50, left: 70 },
-  { src: "/Images/food6.jpg", alt: "Food 6", top: 60, left: 40 },
-  { src: "/Images/food8.jpg", alt: "Food 8", top: 80, left: 25 },
-  { src: "/Images/food7.jpg", alt: "Food 7", top: 70, left: 60 },
+  { src: "/images/food1.jpg", alt: "Food 1", top: 10, left: 20 },
+  { src: "/images/food2.jpg", alt: "Food 2", top: 20, left: 80 },
+  { src: "/images/food3.jpg", alt: "Food 3", top: 30, left: 50 },
+  { src: "/images/food4.jpg", alt: "Food 4", top: 40, left: 30 },
+  { src: "/images/food5.jpg", alt: "Food 5", top: 50, left: 70 },
+  { src: "/images/food6.jpg", alt: "Food 6", top: 60, left: 40 },
+  { src: "/images/food8.jpg", alt: "Food 8", top: 80, left: 25 },
+  { src: "/images/food7.jpg", alt: "Food 7", top: 70, left: 60 },
 ];
 
 const FoodImages: React.FC = () => {
