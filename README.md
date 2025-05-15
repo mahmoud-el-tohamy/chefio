@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chefio
 
-## Getting Started
+## Overview
+Chefio is a modern web application designed for food enthusiasts to discover, share, and manage recipes. It provides a user-friendly interface for browsing recipes, filtering by categories, and interacting with other users.
 
-First, run the development server:
+## Features
+- **Recipe Discovery**: Browse a variety of recipes with detailed descriptions and images.
+- **Category Filtering**: Filter recipes by categories such as "All", "Food", and "Drink".
+- **User Profiles**: View and manage user profiles, including authored recipes.
+- **Responsive Design**: Enjoy a seamless experience on both desktop and mobile devices.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/chefio.git
+   cd chefio
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Usage
+- Open your browser and navigate to `http://localhost:3000`.
+- Explore recipes, filter by categories, and interact with the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Technologies Used
+- **Next.js**: A React framework for building server-rendered applications.
+- **CSS Modules**: For scoped styling.
+- **Git**: For version control.
