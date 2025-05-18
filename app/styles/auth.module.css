@@ -106,10 +106,10 @@
 }
 
 .error {
-  margin-bottom: 5px;
-  font-size: 0.8rem;
-  color: var(--secondary-color);
-  text-align: center;
+  color: #ff4d4f;
+  font-size: 14px;
+  margin-top: 4px;
+  text-align: left;
 }
 
 .forgotPassword {
@@ -269,4 +269,42 @@
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #1FCC79;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #19b66c;
+}
+
+.submitButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.loadingSpinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
