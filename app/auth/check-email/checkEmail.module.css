@@ -84,3 +84,8 @@
 .sendAgainButton:hover {
   background-color: #f0f0f0;
 }
+
+.emailHighlight {
+  color: #1FCC79;
+  font-weight: 600;
+}

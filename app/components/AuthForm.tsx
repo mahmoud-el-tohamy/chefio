@@ -7,12 +7,14 @@ import Image from "next/image";
 import { useRouter } from "next/navigation"; // For routing in app router
 import styles from "../styles/auth.module.css";
 import { AuthFormProps, FormValues } from "@/types/auth";
+import { authService } from "@/services/auth";
 
 const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   const router = useRouter();
   const isLogin = type === "login";
   const [showPassword, setShowPassword] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
+  const [error, setError] = useState<string>("");
 
   // react-hook-form
   const {
@@ -39,14 +41,44 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setFormLoading(true);
+    setError("");
+    
     try {
-    if (isLogin) {
-        // TODO: Implement actual login logic here
-        console.log('Login data:', data);
-      router.push("/home");
-    } else {
-      router.push("./check-email?type=signup");
+      if (isLogin) {
+        // Signin flow
+        const response = await authService.signin({
+          email: data.email,
+          password: data.password
+        });
+
+        if (response.success) {
+          router.push("/home");
+        } else {
+          setError(response.message);
+        }
+      } else {
+        // Signup flow
+        const response = await authService.signup({
+          username: data.username!,
+          email: data.email,
+          password: data.password
+        });
+
+        if (response.success) {
+          // Store user data in localStorage
+          localStorage.setItem('user', JSON.stringify(response.result));
+          
+          // Send verification code
+          await authService.sendVerificationCode(data.email);
+          
+          // Navigate to check-email page
+          router.push("/auth/check-email?type=signup");
+        } else {
+          setError(response.message);
+        }
       }
+    } catch (error: any) {
+      setError(error.message || (isLogin ? 'Login failed' : 'Signup failed'));
     } finally {
       setFormLoading(false);
     }
@@ -62,6 +94,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
       <p className={styles.subtitle}>Please enter your account here</p>
 
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)} aria-label={isLogin ? "Login form" : "Signup form"}>
+        {error && <div className={styles.error}>{error}</div>}
         {/* Email field */}
         <div className={styles.inputGroup}>
           <div className={styles.inputAndIcon}>
@@ -220,13 +253,17 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
           </div>
         )}
 
+        {/* Submit button */}
         <button
           type="submit"
-          className={styles.primaryButton}
-          aria-label={isLogin ? "Login" : "Sign up"}
+          className={styles.submitButton}
           disabled={formLoading}
         >
-          {formLoading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
+          {formLoading ? (
+            <div className={styles.loadingSpinner}>Loading...</div>
+          ) : (
+            isLogin ? "Login" : "Sign Up"
+          )}
         </button>
 
         <p className={styles.or}>Or continue with</p>

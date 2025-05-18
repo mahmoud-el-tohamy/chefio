@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import styles from "./checkEmail.module.css";
+import { authService } from "@/services/auth";
 
 export default function CheckEmailPage() {
   const router = useRouter();
@@ -12,15 +13,32 @@ export default function CheckEmailPage() {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [timeLeft, setTimeLeft] = useState(180); // 3 minutes = 180 seconds
   const [isResendDisabled, setIsResendDisabled] = useState(true);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {
+    // Get email based on the type
+    const email = type === 'forgot' 
+      ? localStorage.getItem('resetEmail')
+      : JSON.parse(localStorage.getItem('user') || '{}')?.email;
+    
+    if (email) {
+      setUserEmail(email);
+    } else {
+      // If no email is found, redirect to appropriate page
+      router.push(type === 'forgot' ? '/auth/forgot' : '/auth/signup');
+    }
+  }, [type, router]);
 
   useEffect(() => {
     if (timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
     } else {
-      setIsResendDisabled(false); 
+      setIsResendDisabled(false);
     }
   }, [timeLeft]);
 
@@ -46,17 +64,62 @@ export default function CheckEmailPage() {
     }
   };
 
-  const handleVerify = () => {
-    if (type === "forgot") {
-      router.push("./reset-password");
-    } else if (type === "signup") {
-      router.push("../../home");
+  const handleVerify = async () => {
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const providedCode = code.join("");
+      
+      if (type === 'forgot') {
+        const response = await authService.verifyForgotPasswordCode(userEmail, providedCode);
+        if (response.success) {
+          router.push("./reset-password");
+        } else {
+          setError(response.message);
+        }
+      } else {
+        const response = await authService.verifyCode(userEmail, providedCode);
+        if (response.success) {
+          router.push("../../home");
+        } else {
+          setError(response.message);
+        }
+      }
+    } catch (error: any) {
+      setError(error.message || "Failed to verify code");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleSendAgain = () => {
-    setIsResendDisabled(true); 
-    setTimeLeft(180); 
+  const handleSendAgain = async () => {
+    setError("");
+    setIsLoading(true);
+    
+    try {
+      if (type === 'forgot') {
+        const response = await authService.sendForgotPasswordCode(userEmail);
+        if (response.success) {
+          setIsResendDisabled(true);
+          setTimeLeft(180);
+        } else {
+          setError(response.message);
+        }
+      } else {
+        const response = await authService.sendVerificationCode(userEmail);
+        if (response.success) {
+          setIsResendDisabled(true);
+          setTimeLeft(180);
+        } else {
+          setError(response.message);
+        }
+      }
+    } catch (error: any) {
+      setError(error.message || "Failed to send code");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const minutes = Math.floor(timeLeft / 60);
@@ -65,7 +128,12 @@ export default function CheckEmailPage() {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Check your email</h1>
-      <p className={styles.subtitle}>We&apos;ve sent the code to your email</p>
+      <p className={styles.subtitle}>
+        We&apos;ve sent the code to{" "}
+        <span className={styles.emailHighlight}>{userEmail}</span>
+      </p>
+
+      {error && <p className={styles.error}>{error}</p>}
 
       <div className={styles.codeContainer}>
         {code.map((digit, index) => (
@@ -82,6 +150,7 @@ export default function CheckEmailPage() {
             ref={(el) => {
               inputRefs.current[index] = el;
             }}
+            disabled={isLoading}
           />
         ))}
       </div>
@@ -93,16 +162,20 @@ export default function CheckEmailPage() {
         </span>
       </p>
 
-      <button className={styles.verifyButton} onClick={handleVerify}>
-        Verify
+      <button 
+        className={styles.verifyButton} 
+        onClick={handleVerify}
+        disabled={isLoading || code.some(digit => !digit)}
+      >
+        {isLoading ? "Verifying..." : "Verify"}
       </button>
 
       <button
         className={styles.sendAgainButton}
         onClick={handleSendAgain}
-        disabled={isResendDisabled}
+        disabled={isResendDisabled || isLoading}
       >
-        Send again
+        {isLoading ? "Sending..." : "Send again"}
       </button>
     </div>
   );
