@@ -1,51 +1,99 @@
 .container {
   min-height: 100vh;
-  background-color: #FAFAFA;
+  background-color: var(--background-color);
 }
 
 .main {
   max-width: 1200px;
   margin: 0 auto;
-  padding-top: 8rem;
+  padding: 2rem;
 }
 
 .topSection {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin: 0 2rem;
+  margin-bottom: 2rem;
+  gap: 2rem;
 }
 
 .filterSection {
-  flex: 1;
+  flex: 0 0 250px;
 }
 
 .categoryTitle {
-  font-size: 1.25rem;
-  color: #2E3E5C;
-  margin-bottom: 1rem;
+  font-size: 1.2rem;
   font-weight: 600;
-  width: fit-content;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 1.2rem;
+  color: var(--text-color);
+}
+
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 1.2rem;
+  color: #dc2626;
+  text-align: center;
+  padding: 1rem;
+  background-color: #fee2e2;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1rem;
+}
+
+.paginationButton {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  font-size: 0.9rem;
+  color: var(--text-color);
 }
 
 @media (max-width: 768px) {
   .topSection {
     flex-direction: column;
-    gap: 1rem;
-    align-items: center;
-  }
-  .topSection {
-    margin-top: 6rem;
-  }
-
-  .main {
-    padding: 1rem;
   }
 
   .filterSection {
-    display: flex;
-    align-items: center;
-    flex-direction: column  ;
+    flex: 1;
+    width: 100%;
   }
 }
 

@@ -12,21 +12,39 @@ interface RecipeGridProps {
 }
 
 const RecipeGrid: React.FC<RecipeGridProps> = ({ recipes, onToggleLike }) => {
+  if (!recipes || recipes.length === 0) {
+    return (
+      <div className={styles.grid}>
+        <p className={styles.noRecipes}>No recipes found</p>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.grid}>
       {recipes.map((recipe) => (
-        <Link key={recipe.id} href={`/recipes/${recipe.id}`} className={styles.recipeCard} aria-label={`View details for ${recipe.title}`}>
+        <Link 
+          key={recipe._id} 
+          href={`/recipes/${recipe._id}`} 
+          className={styles.recipeCard}
+        >
           <div className={styles.imageContainer}>
             <Image
-              src={recipe.image}
-              alt={`Image of ${recipe.title}`}
+              src={recipe.recipePicture}
+              alt={`Image of ${recipe.foodName}`}
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className={styles.image}
+              priority={false}
             />
             <button 
               className={`${styles.favoriteButton} ${recipe.isLiked ? styles.liked : ''}`}
-              onClick={(e) => { e.preventDefault(); onToggleLike(recipe.id); }}
-              aria-label={recipe.isLiked ? `Remove ${recipe.title} from favorites` : `Add ${recipe.title} to favorites`}
+              onClick={(e) => { 
+                e.preventDefault(); 
+                e.stopPropagation();
+                onToggleLike(recipe._id); 
+              }}
+              aria-label={recipe.isLiked ? `Remove ${recipe.foodName} from favorites` : `Add ${recipe.foodName} to favorites`}
             >
               <Image
                 src={recipe.isLiked ? "/icons/heart-filled.svg" : "/icons/heart.svg"}
@@ -39,21 +57,21 @@ const RecipeGrid: React.FC<RecipeGridProps> = ({ recipes, onToggleLike }) => {
           
           <div className={styles.authorInfo}>
             <Image
-              src={recipe.author.avatar}
-              alt={`Avatar of ${recipe.author.name}`}
+              src={recipe.createdBy.profilePicture}
+              alt={`Avatar of ${recipe.createdBy.username}`}
               width={32}
               height={32}
               className={styles.avatar}
             />
-            <span className={styles.authorName}>{recipe.author.name}</span>
+            <span className={styles.authorName}>{recipe.createdBy.username}</span>
           </div>
 
-          <h3 className={styles.recipeTitle}>{recipe.title}</h3>
+          <h3 className={styles.recipeTitle}>{recipe.foodName}</h3>
           
           <div className={styles.recipeDetails}>
-            <span>{recipe.category}</span>
+            <span className={styles.category}>{recipe.category.name}</span>
             <span>•</span>
-            <span>{recipe.duration}</span>
+            <span className={styles.duration}>{recipe.cookingDuration} mins</span>
           </div>
         </Link>
       ))}
