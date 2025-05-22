@@ -1,88 +1,119 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import RecipeGrid from "@/components/recipe/RecipeGrid";
 import CategoryFilter from "@/components/recipe/CategoryFilter";
 import SearchBar from "@/components/common/SearchBar";
 import SearchResults from "@/components/SearchResults";
-import { mockRecipes } from "@/data/mockRecipes";
 import styles from "@/styles/HomePage.module.css";
-import { Recipe } from "@/types";
+import { Recipe, RecipeResponse } from "@/types";
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { getAccessToken } from '../services/auth';
+import axios from 'axios';
+
+const API_BASE_URL = 'https://chefio-beta.vercel.app/api/v1';
 
 const HomePage = () => {
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [executedQuery, setExecutedQuery] = useState("");
   const [durationFilter, setDurationFilter] = useState(60);
   const [showResults, setShowResults] = useState(false);
-  const [searchResults, setSearchResults] = useState<Recipe[]>([]);
-  const [likedRecipes, setLikedRecipes] = useState<Set<string>>(new Set());
-
-
-  const filteredByCategory = mockRecipes.map(recipe => ({
-    ...recipe,
-    isLiked: likedRecipes.has(recipe.id)
-  })).filter((recipe) => {
-    const matchesCategory = selectedCategory === "All" || recipe.category === selectedCategory;
-    const matchesDuration = parseInt(recipe.duration.replace(/[^0-9]/g, "")) <= durationFilter;
-    return matchesCategory && matchesDuration;
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [order, setOrder] = useState("desc");
+  const [limit] = useState(12);
+  const [searchParams, setSearchParams] = useState({
+    search: '',
+    category: '',
+    cookingDuration: '',
+    sortBy: 'createdAt',
+    order: 'desc',
+    page: 1,
+    limit: 12
   });
 
-  const handleSearch = (query: string) => {
-    // Prevent empty searches
-    if (!query.trim()) {
+  useEffect(() => {
+    const token = getAccessToken();
+    if (!token) {
+      router.push('/auth/login');
       return;
     }
+    fetchRecipes();
+  }, [searchParams]);
 
-    setShowResults(true);
-    setExecutedQuery(query);
-    const results = mockRecipes.map(recipe => ({
-      ...recipe,
-      isLiked: likedRecipes.has(recipe.id)
-    })).filter((recipe) => {
-      const matchesSearch = recipe.title.toLowerCase().includes(query.toLowerCase()) ||
-                          recipe.author.name.toLowerCase().includes(query.toLowerCase());
-      const matchesCategory = selectedCategory === "All" || recipe.category === selectedCategory;
-      const matchesDuration = parseInt(recipe.duration.replace(/[^0-9]/g, "")) <= durationFilter;
-      return matchesSearch && matchesCategory && matchesDuration;
-    });
-    setSearchResults(results);
+  const fetchRecipes = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const token = getAccessToken();
+      console.log('Access token:', token);
+      if (!token) {
+        router.push('/auth/login');
+        return;
+      }
+
+      const queryParams = new URLSearchParams();
+      Object.entries(searchParams).forEach(([key, value]) => {
+        if (value) queryParams.append(key, value.toString());
+      });
+
+      const response = await axios.get<RecipeResponse>(
+        `${API_BASE_URL}/recipe/get-recipes?${queryParams.toString()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.data.success) {
+        setRecipes(response.data.recipes);
+        setTotalPages(Math.ceil(response.data.total / searchParams.limit));
+      } else {
+        setError(response.data.message || 'Failed to fetch recipes');
+      }
+    } catch (err: any) {
+      console.error('Error fetching recipes:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to fetch recipes');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSearch = (value: string) => {
+    setSearchParams(prev => ({ ...prev, search: value, page: 1 }));
   };
 
   const handleFilter = (filters: { category: string; duration: number }) => {
-    setSelectedCategory(filters.category);
-    setDurationFilter(filters.duration);
+    setSearchParams(prev => ({
+      ...prev,
+      category: filters.category,
+      cookingDuration: filters.duration.toString(),
+      page: 1
+    }));
   };
 
-  const handleToggleLike = (recipeId: string) => {
-    setLikedRecipes(prev => {
-      const newLiked = new Set(prev);
-      if (newLiked.has(recipeId)) {
-        newLiked.delete(recipeId);
-      } else {
-        newLiked.add(recipeId);
-      }
-      return newLiked;
-    });
-
-    // Update search results if they're being shown
-    if (showResults) {
-      setSearchResults(prev => 
-        prev.map(recipe => 
-          recipe.id === recipeId 
-            ? { ...recipe, isLiked: !recipe.isLiked }
-            : recipe
-        )
-      );
-    }
+  const handleSortChange = (value: string) => {
+    const [sortBy, order] = value.split('-');
+    setSearchParams(prev => ({ ...prev, sortBy, order, page: 1 }));
   };
 
-  const clearSearch = () => {
-    setShowResults(false);
-    setSearchQuery("");
-    setExecutedQuery("");
+  const handlePageChange = (page: number) => {
+    setSearchParams(prev => ({ ...prev, page }));
+  };
+
+  const handleToggleLike = async (recipeId: string) => {
+    // Implement like/unlike functionality here
+    // You'll need to make an API call to update the like status
   };
 
   return (
@@ -109,21 +140,40 @@ const HomePage = () => {
               onFilter={handleFilter}
             />
           </div>
-          {!showResults ? (
-            <RecipeGrid 
-              recipes={filteredByCategory}
-              onToggleLike={handleToggleLike}
-            />
+          
+          {isLoading ? (
+            <div className={styles.loading}>Loading...</div>
+          ) : error ? (
+            <div className={styles.error}>{error}</div>
           ) : (
-            <SearchResults
-              query={executedQuery}
-              results={searchResults.filter(recipe => 
-                selectedCategory === "All" || recipe.category === selectedCategory
+            <>
+              <RecipeGrid 
+                recipes={recipes}
+                onToggleLike={handleToggleLike}
+              />
+              
+              {totalPages > 1 && (
+                <div className={styles.pagination}>
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={styles.paginationButton}
+                  >
+                    Previous
+                  </button>
+                  <span className={styles.pageInfo}>
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={styles.paginationButton}
+                  >
+                    Next
+                  </button>
+                </div>
               )}
-              isVisible={true}
-              onToggleLike={handleToggleLike}
-              onClearSearch={clearSearch}
-            />
+            </>
           )}
         </main>
       </div>
