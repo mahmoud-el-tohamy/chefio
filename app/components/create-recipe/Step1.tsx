@@ -1,32 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '@/styles/CreateRecipe.module.css';
+import axios from 'axios';
+import { getAccessToken } from '@/services/auth';
 
 interface Step1Props {
-  onNext: () => void;
+  onNext: (data: { foodName: string; coverPhoto: File | null; description: string; cookingDuration: number; category: string }) => void;
   onCancel: () => void;
+  initialData: { foodName: string; recipePicture: string; description: string; cookingDuration: number; category: string; ingredients?: string[]; steps?: string[] };
 }
 
-export default function Step1({ onNext, onCancel }: Step1Props) {
-  const [foodName, setFoodName] = useState('');
-  const [description, setDescription] = useState('');
-  const [duration, setDuration] = useState(30);
+interface Category {
+  _id: string;
+  name: string;
+}
+
+export default function Step1({ onNext, onCancel, initialData }: Step1Props) {
+  const [foodName, setFoodName] = useState(initialData.foodName);
+  const [description, setDescription] = useState(initialData.description);
+  const [duration, setDuration] = useState(initialData.cookingDuration);
   const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
-  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(initialData.recipePicture || null);
+  const [category, setCategory] = useState(initialData.category);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = getAccessToken();
+        const response = await axios.get(
+          'https://chefio-beta.vercel.app/api/v1/recipe/get-categories',
+          {
+            headers: {
+              Authorization: token ? `Bearer ${token}` : '',
+            },
+          }
+        );
+
+        if (response.data.success) {
+          setCategories(response.data.categories);
+        } else {
+          setError(response.data.message || "Failed to fetch categories.");
+        }
+      } catch (err: any) {
+        setError(err.response?.data?.message || err.message || "An error occurred while fetching categories.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (initialData.recipePicture && !coverPhoto) {
+      setCoverPreview(initialData.recipePicture);
+    }
+  }, [initialData.recipePicture, coverPhoto]);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setCoverPhoto(e.target.files[0]);
-      setCoverPreview(URL.createObjectURL(e.target.files[0]));
-      setErrors(prev => ({ ...prev, coverPhoto: '' }));
+      const file = e.target.files[0];
+      setCoverPhoto(file);
+      setCoverPreview(URL.createObjectURL(file));
+      setErrors(prev => ({ ...prev, recipePicture: '' }));
     }
   };
 
   const validateStep1 = () => {
     const newErrors: { [key: string]: string } = {};
     
-    if (!coverPhoto) {
-      newErrors.coverPhoto = 'Please add a cover photo';
+    if (!coverPhoto && !initialData.recipePicture) {
+      newErrors.recipePicture = 'Please add a cover photo';
     }
     if (!foodName.trim()) {
       newErrors.foodName = 'Please enter a food name';
@@ -34,15 +83,29 @@ export default function Step1({ onNext, onCancel }: Step1Props) {
     if (!description.trim()) {
       newErrors.description = 'Please enter a description';
     }
+    if (!category.trim()) {
+      newErrors.category = 'Please select a category';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
+  const handleNextClick = () => {
     if (validateStep1()) {
-      onNext();
+      onNext({
+        foodName,
+        coverPhoto: coverPhoto,
+        description,
+        cookingDuration: duration,
+        category,
+      });
     }
+  };
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCategory(e.target.value);
+    setErrors(prev => ({ ...prev, category: '' }));
   };
 
   return (
@@ -73,7 +136,7 @@ export default function Step1({ onNext, onCancel }: Step1Props) {
           onChange={handlePhotoChange}
         />
       </label>
-      {errors.coverPhoto && <div className={styles.errorText}>{errors.coverPhoto}</div>}
+      {errors.recipePicture && <div className={styles.errorText}>{errors.recipePicture}</div>}
 
       <div className={styles.formRow}>
         <div className={styles.formCol}>
@@ -121,8 +184,31 @@ export default function Step1({ onNext, onCancel }: Step1Props) {
           <span className={styles.durationLabel}>&gt;60</span>
         </div>
       </div>
+
+      <div className={styles.formRow}>
+        <div className={styles.formCol}>
+          <label className={styles.inputLabel}>Category</label>
+          <select
+            className={`${styles.input} ${errors.category ? styles.inputError : ''}`}
+            value={category}
+            onChange={handleCategoryChange}
+            disabled={loading}
+          >
+            <option value="">Select a category</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+          {errors.category && <div className={styles.errorText}>{errors.category}</div>}
+          {error && <div className={styles.errorText}>{error}</div>}
+        </div>
+        <div className={styles.formCol}></div>
+      </div>
+
       <div className={styles.buttonRow}>
-        <button className={styles.nextBtn} onClick={handleNext}>Next</button>
+        <button className={styles.nextBtn} onClick={handleNextClick}>Next</button>
       </div>
     </div>
   );

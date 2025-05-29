@@ -7,6 +7,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  padding-top: calc(2rem + 64px); /* Add top padding to account for fixed navbar height (adjust 64px if navbar height changes) */
 }
 
 .topSection {
@@ -19,6 +20,12 @@
 
 .filterSection {
   flex: 0 0 250px;
+}
+
+/* Style for the SearchBar container within topSection on larger screens */
+.topSection :global(.SearchBar_searchContainer__v_9w8) {
+  flex-grow: 1; /* Allow search bar to take available space */
+  max-width: none; /* Remove max-width constraint on larger screens */
 }
 
 .categoryTitle {

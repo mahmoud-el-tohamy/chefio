@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import RecipeGrid from "@/components/recipe/RecipeGrid";
-import CategoryFilter from "@/components/recipe/CategoryFilter";
+import CategoryFilter from "./components/CategoryFilter";
 import SearchBar from "@/components/common/SearchBar";
 import SearchResults from "@/components/SearchResults";
 import styles from "@/styles/HomePage.module.css";
@@ -17,7 +17,6 @@ const API_BASE_URL = 'https://chefio-beta.vercel.app/api/v1';
 
 const HomePage = () => {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [executedQuery, setExecutedQuery] = useState("");
   const [durationFilter, setDurationFilter] = useState(60);
@@ -33,7 +32,7 @@ const HomePage = () => {
   const [searchParams, setSearchParams] = useState({
     search: '',
     category: '',
-    cookingDuration: '',
+    cookingDuration: null as number | null,
     sortBy: 'createdAt',
     order: 'desc',
     page: 1,
@@ -63,7 +62,13 @@ const HomePage = () => {
 
       const queryParams = new URLSearchParams();
       Object.entries(searchParams).forEach(([key, value]) => {
-        if (value) queryParams.append(key, value.toString());
+        if (value !== null && value !== '') {
+          if (key === 'cookingDuration') {
+             queryParams.append(key, value.toString());
+          } else {
+             queryParams.append(key, value.toString());
+          }
+        }
       });
 
       const response = await axios.get<RecipeResponse>(
@@ -93,12 +98,16 @@ const HomePage = () => {
     setSearchParams(prev => ({ ...prev, search: value, page: 1 }));
   };
 
-  const handleFilter = (filters: { category: string; duration: number }) => {
+  const handleFilter = (filters: {
+    cookingDuration: number | null;
+    sortBy: string;
+    order: string;
+  }) => {
     setSearchParams(prev => ({
       ...prev,
-      category: filters.category,
-      cookingDuration: filters.duration.toString(),
-      page: 1
+      cookingDuration: filters.cookingDuration,
+      sortBy: filters.sortBy,
+      order: filters.order,
     }));
   };
 
@@ -116,6 +125,15 @@ const HomePage = () => {
     // You'll need to make an API call to update the like status
   };
 
+  // New handler for category selection
+  const handleCategorySelect = (categoryName: string) => {
+    setSearchParams(prev => ({
+      ...prev,
+      category: categoryName,
+      page: 1, // Reset page when category changes
+    }));
+  };
+
   return (
     <>
       <Head>
@@ -129,8 +147,8 @@ const HomePage = () => {
             <div className={styles.filterSection}>
               <h2 className={styles.categoryTitle}>Category</h2>
               <CategoryFilter
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
+                selectedCategory={searchParams.category}
+                setSelectedCategory={handleCategorySelect}
               />
             </div>
             <SearchBar
@@ -138,6 +156,7 @@ const HomePage = () => {
               onChange={setSearchQuery}
               onSearch={handleSearch}
               onFilter={handleFilter}
+              initialFilters={searchParams}
             />
           </div>
           

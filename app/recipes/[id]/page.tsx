@@ -6,17 +6,64 @@ import styles from "./RecipePage.module.css";
 import Link from "next/link";
 import { recipeService, Recipe } from "@/services/recipe";
 import { useParams } from "next/navigation";
+import axios from "axios";
+import Cookies from 'js-cookie';
 
-function LikeButton({ initialLiked, initialCount }: { initialLiked: boolean; initialCount: number }) {
+function LikeButton({ initialLiked, initialCount, recipeId }: { initialLiked: boolean; initialCount: number; recipeId: string }) {
   const [liked, setLiked] = useState(initialLiked);
   const [count, setCount] = useState(initialCount);
+
+  const handleLikeClick = async () => {
+    const newLikedState = !liked;
+    setLiked(newLikedState); // Optimistic update
+    setCount(newLikedState ? count + 1 : count - 1); // Optimistic update
+
+    try {
+      let token = Cookies.get('Authorization');
+      if (!token) {
+        alert("You need to be logged in to like recipes.");
+        setLiked(!newLikedState); // Revert optimistic update
+        setCount(newLikedState ? count - 1 : count + 1); // Revert optimistic update
+        return; // Stop the function if no token
+      }
+
+      // Remove 'Bearer ' prefix if it exists in the cookie value
+      if (token.startsWith('Bearer ')) {
+        token = token.substring('Bearer '.length);
+      }
+
+      const response = await axios.post(
+        `https://chefio-beta.vercel.app/api/v1/recipe/likes/${recipeId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Use token from cookie after removing extra Bearer
+          },
+        }
+      );
+
+      if (response.data.success) {
+        // API call successful, state already updated optimistically
+        console.log(response.data.message); // Log success message
+      } else {
+        // API call failed, revert optimistic update and show error
+        setLiked(!newLikedState);
+        setCount(newLikedState ? count - 1 : count + 1);
+        alert("Failed to update like status: " + response.data.message); // Show error message
+      }
+    } catch (error) {
+      // Network error or other exception, revert optimistic update and show error
+      setLiked(!newLikedState);
+      setCount(newLikedState ? count - 1 : count + 1);
+      console.error("Error liking/unliking recipe:", error);
+      alert("An error occurred while updating like status."); // Show generic error message
+    }
+  };
+
   return (
     <button
       className={styles.likeButton + (liked ? " " + styles.liked : "")}
-      onClick={() => {
-        setLiked((prev) => !prev);
-        setCount((c) => (liked ? c - 1 : c + 1));
-      }}
+      onClick={handleLikeClick}
       aria-label={liked ? "Unlike" : "Like"}
       type="button"
     >
@@ -45,7 +92,7 @@ function RecipeHeader({ recipe }: { recipe: Recipe }) {
             <Image src={recipe.createdBy.profilePicture} alt={recipe.createdBy.username} width={32} height={32} className={styles.avatar} />
             <span className={styles.authorName}>{recipe.createdBy.username}</span>
           </Link>
-          <LikeButton initialLiked={recipe.isLiked} initialCount={recipe.likes} />
+          <LikeButton initialLiked={recipe.isLiked} initialCount={recipe.likes} recipeId={recipe._id} />
         </div>
         <div className={styles.categoryRow}>
           <span className={styles.category}>{recipe.category.name}</span>
@@ -149,7 +196,7 @@ export default function RecipePage() {
                   <Image src={recipe.createdBy.profilePicture} alt={recipe.createdBy.username} width={40} height={40} className={styles.avatar} />
                   <span className={styles.authorName}>{recipe.createdBy.username}</span>
                 </Link>
-                <LikeButton initialLiked={recipe.isLiked} initialCount={recipe.likes} />
+                <LikeButton initialLiked={recipe.isLiked} initialCount={recipe.likes} recipeId={recipe._id} />
               </div>
               <div className={styles.descriptionBox + ' ' + styles.hideOnTablet}>
                 <h2 className={styles.sectionTitle}>Description</h2>
