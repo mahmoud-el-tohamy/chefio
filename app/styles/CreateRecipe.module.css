@@ -1,0 +1,384 @@
+.stepContainer {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(44, 62, 92, 0.07);
+  max-width: 700px;
+  margin: 35px auto 0 auto;
+  padding: 40px 32px 32px 32px;
+  position: relative;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.stepTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--main-text-color);
+}
+
+.stepCount {
+  color: var(--secondary-text-color);
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.cancelBtn {
+  background: none;
+  border: none;
+  color: var(--secondary-color);
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.cancelBtn:hover {
+  color: #ff2d2d;
+}
+
+.coverPhotoBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 180px;
+  border: 2px dashed var(--outline-color);
+  border-radius: 16px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  background: var(--form-color);
+  transition: border-color 0.2s;
+}
+.coverPhotoBox:hover {
+  border-color: var(--primary-color);
+}
+
+.coverPhotoPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #bfc8d7;
+}
+.coverPhotoIcon {
+  width: 64px;
+  height: 64px;
+  background: url('/icons/cover-placeholder.svg') center/contain no-repeat;
+  margin-bottom: 10px;
+  display: block;
+}
+.coverPhotoText {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--main-text-color);
+  margin-bottom: 2px;
+}
+.coverPhotoSubText {
+  font-size: 0.95rem;
+  color: var(--secondary-text-color);
+}
+.coverPreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.formRow {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 24px;
+}
+.formCol {
+  flex: 1;
+}
+.inputLabel {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: var(--main-text-color);
+}
+.input {
+  background: #fff;
+  border: 1.5px solid var(--outline-color);
+  color: var(--main-text-color);
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 32px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input, .textarea {
+  font-family: "Inter", sans-serif;
+}
+.input:focus {
+  border-color: var(--primary-color);
+}
+.textarea {
+  background: #fff;
+  border: 1.5px solid var(--outline-color);
+  color: var(--main-text-color);
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 18px;
+  font-size: 1rem;
+  outline: none;
+  min-height: 80px;
+  transition: border-color 0.2s;
+  resize: none;
+}
+.textarea:focus {
+  border-color: var(--primary-color);
+}
+
+.durationRow {
+  margin-bottom: 32px;
+}
+.durationSliderRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+.durationSlider {
+  flex: 1;
+  accent-color: var(--primary-color);
+  height: 4px;
+  background: #e9ecef;
+  border-radius: 2px;
+}
+.durationLabel {
+  font-size: 0.95rem;
+  color: var(--secondary-text-color);
+  font-weight: 600;
+}
+.durationValue {
+  font-weight: 700;
+  color: var(--main-text-color);
+  font-size: 1.1rem;
+}
+
+.buttonRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
+}
+.nextBtn, .backBtn {
+  padding: 14px 0;
+  border: none;
+  border-radius: 32px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 700;
+  width: 220px;
+  transition: background 0.2s, color 0.2s;
+}
+.nextBtn {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+.nextBtn:hover {
+  background-color: #19b86b;
+}
+.backBtn {
+  background-color: var(--form-color);
+  color: var(--main-text-color);
+}
+.backBtn:hover {
+  background-color: #e9ecef;
+}
+
+.ingredientSection, .stepsSection {
+  margin-bottom: 32px;
+}
+.ingredientHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.groupBtn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.groupBtn:hover {
+  color: #19b86b;
+}
+.ingredientRow, .stepRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.ingredientRow .input {
+  border-radius: 32px;
+}
+.dragIcon {
+  color: var(--secondary-text-color);
+  font-size: 1.2rem;
+  cursor: grab;
+  margin-right: 4px;
+}
+.stepNumber {
+  font-weight: 700;
+  min-width: 28px;
+  color: #fff;
+  background: var(--primary-color);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  margin-right: 4px;
+}
+.cameraBtn {
+  background: var(--form-color);
+  border: none;
+  border-radius: 8px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--secondary-text-color);
+  margin-left: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.cameraBtn:hover {
+  background: #e9ecef;
+}
+.addIngredientBtn, .addStepBtn {
+  background: var(--form-color);
+  border: none;
+  color: var(--main-text-color);
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  border-radius: 32px;
+  width: 100%;
+  padding: 12px 0;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+.addIngredientBtn:hover, .addStepBtn:hover {
+  background: #e9ecef;
+}
+
+.successModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.successModal {
+  background-color: white;
+  padding: 40px 32px 32px 32px;
+  border-radius: 20px;
+  text-align: center;
+  min-width: 340px;
+  max-width: 420px;
+  box-shadow: 0 2px 16px rgba(44, 62, 92, 0.13);
+}
+.emoji {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+.successTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--main-text-color);
+}
+.successText {
+  margin-bottom: 24px;
+  color: var(--secondary-text-color);
+  font-size: 1.1rem;
+}
+.successBtn {
+  padding: 14px 0;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 32px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 700;
+  width: 220px;
+  transition: background 0.2s;
+}
+.successBtn:hover {
+  background-color: #19b86b;
+}
+
+@media (max-width: 800px) {
+  .stepContainer {
+    max-width: 98vw;
+    padding: 24px 4vw 24px 4vw;
+  }
+  .successModal {
+    min-width: 220px;
+    max-width: 98vw;
+    padding: 24px 4vw 24px 4vw;
+  }
+}
+@media (max-width: 600px) {
+  .stepContainer {
+    margin: 24px 0 0 0;
+    padding: 16px 2vw 16px 2vw;
+  }
+  .formRow {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .buttonRow {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  .nextBtn, .backBtn {
+    width: 100%;
+    font-size: 1rem;
+    padding: 12px 0;
+  }
+  .successModal {
+    min-width: 180px;
+    max-width: 98vw;
+    padding: 16px 2vw 16px 2vw;
+  }
+} 
+
+.coverPhotoBox {
+  background: white;
+}
+
+.inputError {
+  border-color: #ff2d2d !important;
+}
+
+.errorText {
+  color: #ff2d2d;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}

@@ -1,0 +1,89 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+:root {
+  --primary-color: #1fcc79;
+  --secondary-color: #ff6464;
+  --main-text-color: #2e3e5c;
+  --secondary-text-color: #9fa5c0;
+  --outline-color: #d0dbea;
+  --form-color: #f4f5f7;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: white;
+  font-family: "Inter", serif;
+  color: var(--main-text-color);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+input, textarea {
+  caret-color: var(--primary-color);
+}
+
+button:disabled,
+input[type="submit"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+@media (max-width: 552px) {
+  .categorySearch {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid var(--primary-color, #1fcc79);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+
+/* Webkit browsers */
+::-webkit-scrollbar {
+  width: 12px;
+  background: var(--outline-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #17a96a; /* Slightly darker than --primary-color */
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--outline-color);
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) var(--outline-color);
+}

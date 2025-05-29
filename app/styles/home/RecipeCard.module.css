@@ -1,0 +1,92 @@
+.card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  z-index: 1;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  padding-top: 100%; /* 1:1 Aspect Ratio */
+}
+
+.image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  padding: 16px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2E3E5C;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.authorAvatar {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.authorName {
+  font-size: 14px;
+  color: #9FA5C0;
+}
+
+.time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #9FA5C0;
+  font-size: 14px;
+}
+
+.authorProfileLink {
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 14px;
+  }
+  
+  .authorName, .time {
+    font-size: 12px;
+  }
+} 
