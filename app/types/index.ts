@@ -35,6 +35,7 @@ export interface RecipeResponse {
   message?: string;
   recipes: Recipe[];
   total: number;
+  totalRecipes: number;
   currentPage: number;
   totalPages: number;
 }

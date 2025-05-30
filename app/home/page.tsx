@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getAccessToken } from '../services/auth';
 import axios from 'axios';
+import Pagination from "./components/Pagination";
 
 const API_BASE_URL = 'https://chefio-beta.vercel.app/api/v1';
 
@@ -28,7 +29,7 @@ const HomePage = () => {
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState("createdAt");
   const [order, setOrder] = useState("desc");
-  const [limit] = useState(12);
+  const [limit, setLimit] = useState(8);
   const [searchParams, setSearchParams] = useState({
     search: '',
     category: '',
@@ -36,7 +37,7 @@ const HomePage = () => {
     sortBy: 'createdAt',
     order: 'desc',
     page: 1,
-    limit: 12
+    limit: limit
   });
 
   useEffect(() => {
@@ -82,7 +83,9 @@ const HomePage = () => {
 
       if (response.data.success) {
         setRecipes(response.data.recipes);
-        setTotalPages(Math.ceil(response.data.total / searchParams.limit));
+        console.log('API total:', response.data.totalRecipes, 'Limit:', searchParams.limit);
+        // Use response.data.totalRecipes for total items
+        setTotalPages(Math.ceil(response.data.totalRecipes / searchParams.limit));
       } else {
         setError(response.data.message || 'Failed to fetch recipes');
       }
@@ -118,6 +121,12 @@ const HomePage = () => {
 
   const handlePageChange = (page: number) => {
     setSearchParams(prev => ({ ...prev, page }));
+    setCurrentPage(page);
+  };
+
+  const handleLimitChange = (newLimit: number) => {
+    setLimit(newLimit);
+    setSearchParams(prev => ({ ...prev, limit: newLimit, page: 1 }));
   };
 
   const handleToggleLike = async (recipeId: string) => {
@@ -133,6 +142,8 @@ const HomePage = () => {
       page: 1, // Reset page when category changes
     }));
   };
+
+  console.log('Total Pages:', totalPages, 'Current Page:', currentPage);
 
   return (
     <>
@@ -171,27 +182,15 @@ const HomePage = () => {
                 onToggleLike={handleToggleLike}
               />
               
-              {totalPages > 1 && (
-                <div className={styles.pagination}>
-                  <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className={styles.paginationButton}
-                  >
-                    Previous
-                  </button>
-                  <span className={styles.pageInfo}>
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    className={styles.paginationButton}
-                  >
-                    Next
-                  </button>
-                </div>
-              )}
+              {
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  limit={limit}
+                  onLimitChange={handleLimitChange}
+                />
+              }
             </>
           )}
         </main>
