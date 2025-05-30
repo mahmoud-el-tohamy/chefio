@@ -51,6 +51,41 @@
   font-weight: 500;
 }
 
+/* New styles for select and number input */
+.modal select,
+.modal input[type="number"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #D0DBEA; /* Outline color */
+  border-radius: 8px;
+  background-color: #F4F5F7; /* Form color */
+  color: #2E3E5C; /* Main text color */
+  font-size: 1rem;
+  appearance: none; /* Remove default system styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.modal select {
+  cursor: pointer;
+  /* Add a custom arrow for select */
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%239FA5C0" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 12px top 50%;
+  background-size: 18px auto;
+  padding-right: 36px; /* Make space for the arrow */
+}
+
+.modal input[type="number"]::-webkit-outer-spin-button,
+.modal input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.modal input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 .minutes {
   font-size: 0.875rem;
   color: #9FA5C0;

@@ -3,9 +3,10 @@ import styles from '@/styles/CreateRecipe.module.css';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
 interface Step2Props {
-  onNext: () => void;
+  onNext: (data: { ingredients: string[]; steps: string[] }) => void;
   onBack: () => void;
   onCancel: () => void;
+  initialData: { ingredients: string[]; steps: string[] };
 }
 
 function reorder<T>(list: T[], startIndex: number, endIndex: number): T[] {
@@ -15,9 +16,9 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number): T[] {
   return result;
 }
 
-export default function Step2({ onNext, onBack, onCancel }: Step2Props) {
-  const [ingredients, setIngredients] = useState(['', '', '']);
-  const [steps, setSteps] = useState(['']);
+export default function Step2({ onNext, onBack, onCancel, initialData }: Step2Props) {
+  const [ingredients, setIngredients] = useState(initialData.ingredients.length > 0 ? initialData.ingredients : ['', '', '']);
+  const [steps, setSteps] = useState(initialData.steps.length > 0 ? initialData.steps : ['']);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleIngredientChange = (idx: number, value: string) => {
@@ -64,9 +65,12 @@ export default function Step2({ onNext, onBack, onCancel }: Step2Props) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
+  const handleNextClick = () => {
     if (validateStep2()) {
-      onNext();
+      onNext({
+        ingredients: ingredients.filter(ing => ing.trim() !== ''),
+        steps: steps.filter(step => step.trim() !== ''),
+      });
     }
   };
 
@@ -145,7 +149,7 @@ export default function Step2({ onNext, onBack, onCancel }: Step2Props) {
         </div>
         <div className={styles.buttonRow}>
           <button className={styles.backBtn} onClick={onBack}>Back</button>
-          <button className={styles.nextBtn} onClick={handleNext}>Next</button>
+          <button className={styles.nextBtn} onClick={handleNextClick}>Next</button>
         </div>
       </div>
     </DragDropContext>

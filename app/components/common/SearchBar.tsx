@@ -9,10 +9,23 @@ interface SearchBarProps {
   value: string;
   onChange: (value: string) => void;
   onSearch: (query: string) => void;
-  onFilter: (filters: { category: string; duration: number }) => void;
+  onFilter: (filters: {
+    cookingDuration: number | null;
+    sortBy: string;
+    order: string;
+  }) => void;
+  initialFilters: {
+    search: string;
+    category: string;
+    cookingDuration: number | null;
+    sortBy: string;
+    order: string;
+    page: number;
+    limit: number;
+  };
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onSearch, onFilter }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onSearch, onFilter, initialFilters }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -62,6 +75,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onSearch, onFilt
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
         onApply={onFilter}
+        initialFilters={initialFilters}
       />
     </>
   );

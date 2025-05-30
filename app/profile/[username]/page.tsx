@@ -195,7 +195,7 @@ const ProfilePage = () => {
       try {
         const token = getAccessToken() || "";
         const response = await axios.get(
-          `https://chefio-beta.vercel.app/api/v1/user/get-liked-recipes-profile/${userId}`,
+            `https://chefio-beta.vercel.app/api/v1/user/get-liked-recipes-profile/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
