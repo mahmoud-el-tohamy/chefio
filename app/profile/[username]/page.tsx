@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import styles from "@/styles/ProfilePage.module.css";
 import Button from "@/components/Button";
@@ -149,6 +149,16 @@ const ProfilePage = () => {
   const [followersList, setFollowersList] = useState<any[]>([]);
   const [followersLoading, setFollowersLoading] = useState(false);
   const [followersError, setFollowersError] = useState<string | null>(null);
+  const [isHoveringAvatar, setIsHoveringAvatar] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingPicture, setUploadingPicture] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [editMessage, setEditMessage] = useState<string | null>(null);
+  const [showEditMessage, setShowEditMessage] = useState(false);
+  const [showEditUsernameModal, setShowEditUsernameModal] = useState(false);
+  const [newUsername, setNewUsername] = useState("");
+  const [savingUsername, setSavingUsername] = useState(false);
+  const [editUsernameError, setEditUsernameError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -297,6 +307,123 @@ const ProfilePage = () => {
     setShareUrl("");
   };
 
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadingPicture(true);
+    setUploadError(null);
+
+    const formData = new FormData();
+    formData.append("profilePicture", file);
+
+    try {
+      const token = getAccessToken();
+      if (!token) {
+        setUploadError("Authentication token not found.");
+        setUploadingPicture(false);
+        return;
+      }
+
+      const response = await axios.patch(
+        "https://chefio-beta.vercel.app/api/v1/user/upload-profile-picture",
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setProfile((prevProfile: any) => ({
+          ...prevProfile,
+          profilePicture: response.data.profilePicture,
+        }));
+        // Clear the file input value so the same file can be selected again
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      } else {
+        setUploadError(response.data.message || "Failed to upload picture");
+      }
+    } catch (err: any) {
+      setUploadError(err.response?.data?.message || err.message || "Failed to upload picture");
+    } finally {
+      setUploadingPicture(false);
+    }
+  };
+
+  const handleEditProfile = () => {
+    setShowEditUsernameModal(true);
+    setNewUsername(profile?.username || "");
+    setEditUsernameError(null);
+  };
+
+  const handleUsernameInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewUsername(event.target.value);
+  };
+
+  const handleSaveUsername = async () => {
+    if (!newUsername.trim()) {
+      setEditUsernameError("Username cannot be empty.");
+      return;
+    }
+
+    setSavingUsername(true);
+    setEditUsernameError(null);
+    setEditMessage(null);
+    setShowEditMessage(false);
+
+    const formData = new FormData();
+    formData.append("username", newUsername);
+
+    try {
+      const token = getAccessToken();
+      if (!token) {
+        setEditUsernameError("Authentication token not found.");
+        setSavingUsername(false);
+        return;
+      }
+
+      const response = await axios.patch(
+        "https://chefio-beta.vercel.app/api/v1/user/edit-profile",
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setProfile((prevProfile: any) => ({
+          ...prevProfile,
+          username: response.data.profile.username,
+          profilePicture: response.data.profile.profilePicture,
+        }));
+        setShowEditUsernameModal(false);
+        setEditMessage("Profile updated successfully!");
+        setShowEditMessage(true);
+        setTimeout(() => setShowEditMessage(false), 3000);
+      } else {
+        setEditUsernameError(response.data.message || "Failed to update username.");
+      }
+    } catch (err: any) {
+      setEditUsernameError(err.response?.data?.message || err.message || "An error occurred");
+    } finally {
+      setSavingUsername(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setShowEditUsernameModal(false);
+    setNewUsername(profile?.username || "");
+    setEditUsernameError(null);
+  };
+
   if (loading) {
     return (
       <>
@@ -324,6 +451,41 @@ const ProfilePage = () => {
       <div className={styles.profileContainer}>
         <header className={styles.header}>
           <div className={styles.avatarSection}>
+            {isCurrentUser && (
+              <div
+                className={styles.avatarWrapper}
+                onMouseEnter={() => setIsHoveringAvatar(true)}
+                onMouseLeave={() => setIsHoveringAvatar(false)}
+              >
+                <Image
+                  src={profile.profilePicture}
+                  alt={profile?.username || pageUsername}
+                  width={100}
+                  height={100}
+                  className={styles.avatar}
+                />
+                {isHoveringAvatar && (
+                  <div className={styles.avatarOverlay}>
+                    <button
+                      className={styles.changeAvatarButton}
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadingPicture}
+                    >
+                      {uploadingPicture ? "Uploading..." : "Change Picture"}
+                    </button>
+                  </div>
+                )}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={handleFileChange}
+                />
+                {uploadError && <div className={styles.uploadError}>{uploadError}</div>}
+              </div>
+            )}
+            {!isCurrentUser && (
             <Image
               src={profile.profilePicture}
               alt={profile?.username || pageUsername}
@@ -331,6 +493,7 @@ const ProfilePage = () => {
               height={100}
               className={styles.avatar}
             />
+            )}
             <div className={styles.userInfo}>
               {isCurrentUser && (
                 <div className={styles.yourProfileLabel}>Your Profile:</div>
@@ -353,6 +516,13 @@ const ProfilePage = () => {
             </div>
           </div>
           <div className={styles.actionSection}>
+            {isCurrentUser && (
+              <button className={styles.editProfileBtn} title="Edit profile" aria-label="Edit profile" onClick={handleEditProfile}>
+                 <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M17 3a2.85 2.85 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                 </svg>
+              </button>
+            )}
             {!isCurrentUser && (
               <Button
                 text={isFollowing ? "Following" : "Follow"}
@@ -373,6 +543,11 @@ const ProfilePage = () => {
             </button>
           </div>
         </header>
+        {showEditMessage && editMessage && (
+           <div className={styles.editFeedbackMessage}>
+             {editMessage}
+           </div>
+         )}
         <div className={styles.tabs}>
           <button
             className={tab === "recipes" ? styles.activeTab : ""}
@@ -524,6 +699,29 @@ const ProfilePage = () => {
                 Copied!
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {showEditUsernameModal && (
+        <div className={styles.editUsernameModalOverlay}>
+          <div className={styles.editUsernameModal}>
+            <h2>Edit Username</h2>
+            <input
+              type="text"
+              value={newUsername}
+              onChange={handleUsernameInputChange}
+              className={styles.editUsernameInput}
+              placeholder="Enter new username"
+              disabled={savingUsername}
+            />
+            {editUsernameError && <div className={styles.editUsernameError}>{editUsernameError}</div>}
+            <div className={styles.editModalButtons}>
+              <button onClick={handleSaveUsername} disabled={savingUsername} className={styles.saveUsernameButton}>
+                {savingUsername ? "Saving..." : "Save"}
+              </button>
+              <button onClick={handleCancelEdit} disabled={savingUsername} className={styles.cancelEditButton}>Cancel</button>
+            </div>
           </div>
         </div>
       )}

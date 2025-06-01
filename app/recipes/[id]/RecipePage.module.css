@@ -410,6 +410,20 @@
     font-size: 0.98rem;
     margin-bottom: 0.4rem;
   }
+  .actionButtons {
+    gap: 0.3rem;
+  }
+  
+  .deleteButton {
+    width: 36px;
+    height: 36px;
+    margin-left: 0.3rem;
+  }
+  
+  .trashIcon {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .infoColumn {
@@ -422,7 +436,14 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 1rem;
+}
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 .descriptionBox {
   background: #f9f9f9;
@@ -482,4 +503,212 @@
   .stickyColumn {
     margin-top: 35px !important;
   }
+}
+
+.sidebarTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 1.2rem;
+  color: var(--main-text-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.deleteButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  color: #ff4d4d;
+  background-color: rgba(255, 77, 77, 0.1);
+}
+
+.deleteButton:hover {
+  background-color: rgba(255, 77, 77, 0.2);
+  transform: scale(1.1);
+}
+
+.deleteButton:active {
+  transform: scale(0.95);
+}
+
+.deleteButton.hidden {
+  display: none;
+}
+
+.trashIcon {
+  width: 20px;
+  height: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff4d4d'%3E%3Cpath d='M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.confirmationDialogOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.confirmationDialog {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.confirmationDialog p {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.dialogButtons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.confirmButton {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.confirmButton:hover {
+  background-color: #ff3333;
+  transform: translateY(-1px);
+}
+
+.confirmButton:disabled {
+  background-color: #ffb3b3;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.cancelButton:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-1px);
+}
+
+.cancelButton:disabled {
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* Add animation for the delete button */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.deleteButton {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Add hover effect for the trash icon */
+.deleteButton:hover .trashIcon {
+  transform: scale(1.1);
+  filter: brightness(1.1);
+}
+
+/* Add responsive styles */
+@media (max-width: 768px) {
+  .deleteButton {
+    padding: 6px;
+  }
+  
+  .trashIcon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .confirmationDialog {
+    width: 85%;
+    padding: 20px;
+  }
+  
+  .dialogButtons {
+    flex-direction: column;
+  }
+  
+  .confirmButton,
+  .cancelButton {
+    width: 100%;
+  }
+}
+
+.error {
+  text-align: center;
+  padding: 3rem 1rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.error h2 {
+  font-size: 2rem;
+  color: var(--main-text-color);
+  margin-bottom: 1rem;
+}
+
+.error p {
+  font-size: 1.1rem;
+  color: var(--secondary-text-color);
+  margin-bottom: 2rem;
+}
+
+.backButton {
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  background: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.backButton:hover {
+  background: var(--primary-dark);
 }
