@@ -29,6 +29,77 @@
   object-fit: cover;
 }
 
+.avatarWrapper {
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.avatarOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.avatarWrapper:hover .avatarOverlay {
+  opacity: 1;
+}
+
+.changeAvatarButton {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+}
+
+.changeAvatarButton svg {
+  width: 20px;
+  height: 20px;
+  fill: #fff;
+}
+
+.removeAvatarButton {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  margin-top: 0.5rem;
+}
+
+.removeAvatarButton:hover {
+  text-decoration: underline;
+}
+
+.uploadError {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
 .userInfo {
   display: flex;
   flex-direction: column;
@@ -91,6 +162,26 @@
 }
 .shareBtn:hover {
   background: var(--form-color);
+}
+
+.editProfileBtn {
+  background: none;
+  border: none;
+  color: var(--main-text-color);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.editProfileBtn:hover {
+  background: var(--form-color);
+}
+
+.editProfileBtn svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
 }
 
 .tabs {
@@ -158,6 +249,14 @@
   margin: 0 0 1rem 1rem;
 }
 
+.editFeedbackMessage {
+    color: var(--primary-color); /* Use a color that indicates feedback */
+    font-weight: 500;
+    margin-top: 0.5rem; /* Adjust positioning as needed */
+    text-align: center;
+    /* Add similar positioning/animation styles as the 'Copied!' message if applicable */
+}
+
 .shareButton {
   background: #F2F3F5;
   border: none;
@@ -186,6 +285,155 @@
   height: 20px;
 }
 
+.confirmationDialogOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.confirmationDialog {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.confirmationDialog p {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  color: var(--main-text-color);
+}
+
+.dialogButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.confirmButton,
+.cancelButton {
+  padding: 0.6rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.confirmButton {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+}
+
+.confirmButton:hover {
+  background: #c0392b;
+}
+
+.cancelButton {
+  background: #bdc3c7;
+  color: #2c3e50;
+  border: none;
+}
+
+.cancelButton:hover {
+  background: #95a5a6;
+}
+
+.editUsernameModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.editUsernameModal {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+}
+
+.editUsernameModal h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  color: var(--main-text-color);
+}
+
+.editUsernameInput {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--outline-color);
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.editUsernameInput:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+.editUsernameError {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.editModalButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.saveUsernameButton,
+.cancelEditButton {
+  padding: 0.6rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border: none;
+}
+
+.saveUsernameButton {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.saveUsernameButton:hover {
+  background: var(--primary-dark);
+}
+
+.cancelEditButton {
+  background: #bdc3c7;
+  color: #2c3e50;
+}
+
+.cancelEditButton:hover {
+  background: #95a5a6;
+}
+
 @media (max-width: 800px) {
   .header {
     flex-direction: row;
@@ -202,7 +450,6 @@
   .profileContainer {
     padding-top: 90px;
   }
-
 }
 
 @media (max-width: 600px) {

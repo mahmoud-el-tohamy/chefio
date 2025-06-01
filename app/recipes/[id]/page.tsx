@@ -5,7 +5,7 @@ import Image from "next/image";
 import styles from "./RecipePage.module.css";
 import Link from "next/link";
 import { recipeService, Recipe } from "@/services/recipe";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import Cookies from 'js-cookie';
 
@@ -80,6 +80,88 @@ function LikeButton({ initialLiked, initialCount, recipeId }: { initialLiked: bo
   );
 }
 
+function DeleteButton({ recipeId, isOwner }: { recipeId: string; isOwner: boolean }) {
+  const router = useRouter();
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  console.log('DeleteButton rendered:', { recipeId, isOwner }); // Debug log
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      let token = Cookies.get('Authorization');
+      if (!token) {
+        alert("You need to be logged in to delete recipes.");
+        return;
+      }
+
+      if (token.startsWith('Bearer ')) {
+        token = token.substring('Bearer '.length);
+      }
+
+      const response = await axios.delete(
+        `https://chefio-beta.vercel.app/api/v1/recipe/delete-recipe/${recipeId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        router.push('/home');
+      } else {
+        alert("Failed to delete recipe: " + response.data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting recipe:", error);
+      alert("An error occurred while deleting the recipe.");
+    } finally {
+      setIsDeleting(false);
+      setShowConfirmDialog(false);
+    }
+  };
+
+  // Always render the button, but control its visibility with CSS
+  return (
+    <>
+      <button
+        className={`${styles.deleteButton} ${!isOwner ? styles.hidden : ''}`}
+        onClick={() => setShowConfirmDialog(true)}
+        aria-label="Delete recipe"
+        type="button"
+      >
+        <span className={styles.trashIcon}></span>
+      </button>
+
+      {showConfirmDialog && (
+        <div className={styles.confirmationDialogOverlay}>
+          <div className={styles.confirmationDialog}>
+            <p>Are you sure you want to delete this recipe?</p>
+            <div className={styles.dialogButtons}>
+              <button
+                className={styles.confirmButton}
+                onClick={handleDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </button>
+              <button
+                className={styles.cancelButton}
+                onClick={() => setShowConfirmDialog(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 function RecipeHeader({ recipe }: { recipe: Recipe }) {
   return (
     <div className={styles.header}>
@@ -142,20 +224,67 @@ export default function RecipePage() {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
         const response = await recipeService.getRecipe(params.id as string);
+        if (!response.recipe) {
+          setError('Recipe not found');
+          return;
+        }
         setRecipe(response.recipe);
+        
+        // Get the token and decode it to get user ID
+        const token = Cookies.get('Authorization');
+        if (token) {
+          try {
+            // Remove 'Bearer ' prefix if it exists
+            const cleanToken = token.startsWith('Bearer ') ? token.substring(7) : token;
+            
+            // Decode the JWT token (it's in format: header.payload.signature)
+            const payload = JSON.parse(atob(cleanToken.split('.')[1]));
+            console.log('Full token payload:', payload);
+            
+            // The user ID might be in different fields, let's check all possibilities
+            const currentUserId = payload.id || payload._id || payload.userId || payload.user_id;
+            console.log('Current User ID from token:', currentUserId);
+            console.log('Recipe Creator ID:', response.recipe.createdBy._id);
+            console.log('Are they equal?', currentUserId === response.recipe.createdBy._id);
+            
+            // Check if the current user is the creator
+            const isRecipeOwner = currentUserId === response.recipe.createdBy._id;
+            console.log('Is Recipe Owner:', isRecipeOwner);
+            
+            setIsOwner(isRecipeOwner);
+          } catch (err) {
+            console.error('Error decoding token:', err);
+            console.error('Token value:', token);
+            setIsOwner(false);
+          }
+        } else {
+          console.log('No token found');
+          setIsOwner(false);
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch recipe');
+        console.error('Error fetching recipe:', err);
+        if (axios.isAxiosError(err) && err.response?.status === 404) {
+          setError('Recipe not found');
+        } else {
+          setError(err instanceof Error ? err.message : 'Failed to fetch recipe');
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    fetchRecipe();
+    if (params.id) {
+      fetchRecipe();
+    } else {
+      setError('Invalid recipe ID');
+      setLoading(false);
+    }
   }, [params.id]);
 
   if (loading) {
@@ -174,7 +303,13 @@ export default function RecipePage() {
       <>
         <Navbar />
         <main className={styles.main}>
-          <div className={styles.error}>{error || 'Recipe not found'}</div>
+          <div className={styles.error}>
+            <h2>Oops!</h2>
+            <p>{error || 'Recipe not found'}</p>
+            <Link href="/home" className={styles.backButton}>
+              Back to Home
+            </Link>
+          </div>
         </main>
       </>
     );
@@ -186,7 +321,10 @@ export default function RecipePage() {
       <main className={styles.main}>
         <div className={styles.gridLayout}>
           <div className={styles.stickyColumn}>
-            <div className={styles.sidebarTitle}>{recipe.foodName}</div>
+            <div className={styles.sidebarTitle}>
+              {recipe.foodName}
+              <DeleteButton recipeId={recipe._id} isOwner={isOwner} />
+            </div>
             <div className={styles.coverImageWrapper}>
               <Image src={recipe.recipePicture} alt={recipe.foodName} width={250} height={250} className={styles.coverImage} />
             </div>
@@ -196,7 +334,10 @@ export default function RecipePage() {
                   <Image src={recipe.createdBy.profilePicture} alt={recipe.createdBy.username} width={40} height={40} className={styles.avatar} />
                   <span className={styles.authorName}>{recipe.createdBy.username}</span>
                 </Link>
-                <LikeButton initialLiked={recipe.isLiked} initialCount={recipe.likes} recipeId={recipe._id} />
+                <div className={styles.actionButtons}>
+                  <LikeButton initialLiked={recipe.isLiked} initialCount={recipe.likes} recipeId={recipe._id} />
+                  <DeleteButton recipeId={recipe._id} isOwner={isOwner} />
+                </div>
               </div>
               <div className={styles.descriptionBox + ' ' + styles.hideOnTablet}>
                 <h2 className={styles.sectionTitle}>Description</h2>
