@@ -163,6 +163,56 @@ function DeleteButton({ recipeId, isOwner }: { recipeId: string; isOwner: boolea
 }
 
 function RecipeHeader({ recipe }: { recipe: Recipe }) {
+  const router = useRouter();
+
+  const handleProfileClick = async (e: React.MouseEvent) => {
+    console.log('Profile click handler triggered');
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!recipe || !recipe.createdBy || !recipe.createdBy._id) {
+      console.error('Recipe or creator data is missing:', recipe);
+      return;
+    }
+
+    const creatorId = recipe.createdBy._id;
+    console.log('Using creator ID:', creatorId);
+    
+    try {
+      let token = Cookies.get('Authorization');
+      if (!token) {
+        console.error('No authorization token found');
+        return;
+      }
+
+      // Remove 'Bearer ' prefix if it exists
+      if (token.startsWith('Bearer ')) {
+        token = token.substring(7);
+      }
+
+      console.log('Fetching profile for ID:', creatorId);
+      const response = await axios.get(
+        `https://chefio-beta.vercel.app/api/v1/user/get-profile/${creatorId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log('Profile response:', response.data);
+      if (response.data && response.data.profile) {
+        const profileId = response.data.profile._id;
+        console.log('Profile ID:', profileId);
+        const profileUrl = `/profile/${profileId}`;
+        console.log('Navigating to:', profileUrl);
+        router.push(profileUrl);
+      }
+    } catch (error) {
+      console.error('Error in handleProfileClick:', error);
+    }
+  };
+
   return (
     <div className={styles.header}>
       <div className={styles.imageWrapper}>
@@ -170,10 +220,32 @@ function RecipeHeader({ recipe }: { recipe: Recipe }) {
       </div>
       <div className={styles.meta}>
         <div className={styles.authorRow}>
-          <Link href={`/profile/${recipe.createdBy.username}`} className={styles.authorProfileLink} aria-label={`View ${recipe.createdBy.username}'s profile`}>
-            <Image src={recipe.createdBy.profilePicture} alt={recipe.createdBy.username} width={32} height={32} className={styles.avatar} />
-            <span className={styles.authorName}>{recipe.createdBy.username}</span>
-          </Link>
+          <div 
+            className={styles.authorProfileLink} 
+            onClick={handleProfileClick}
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+          >
+            <Image 
+              src={recipe.createdBy.profilePicture} 
+              alt={recipe.createdBy.username} 
+              width={32} 
+              height={32} 
+              className={styles.avatar} 
+              onClick={handleProfileClick}
+            />
+            <span 
+              className={styles.authorName} 
+              onClick={handleProfileClick}
+              style={{ 
+                cursor: 'pointer', 
+                color: '#007bff', 
+                textDecoration: 'underline',
+                userSelect: 'none'
+              }}
+            >
+              {recipe.createdBy.username}
+            </span>
+          </div>
           <LikeButton initialLiked={recipe.isLiked} initialCount={recipe.likes} recipeId={recipe._id} />
         </div>
         <div className={styles.categoryRow}>
@@ -225,16 +297,20 @@ export default function RecipePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isOwner, setIsOwner] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
+        console.log('Fetching recipe with ID:', params.id);
         const response = await recipeService.getRecipe(params.id as string);
+        console.log('Recipe response:', response);
         if (!response.recipe) {
           setError('Recipe not found');
           return;
         }
         setRecipe(response.recipe);
+        console.log('Recipe data set:', response.recipe);
         
         // Get the token and decode it to get user ID
         const token = Cookies.get('Authorization');
@@ -315,6 +391,57 @@ export default function RecipePage() {
     );
   }
 
+  // Handler for sidebar author link
+  const handleSidebarProfileClick = async (e: React.MouseEvent) => {
+    console.log('Sidebar profile click handler triggered');
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!recipe || !recipe.createdBy || !recipe.createdBy._id) {
+      console.error('Recipe or creator data is missing:', recipe);
+      return;
+    }
+
+    const creatorId = recipe.createdBy._id;
+    console.log('Using creator ID:', creatorId);
+    
+    try {
+      let token = Cookies.get('Authorization');
+      if (!token) {
+        console.error('No authorization token found');
+        return;
+      }
+
+      // Remove 'Bearer ' prefix if it exists
+      if (token.startsWith('Bearer ')) {
+        token = token.substring(7);
+      }
+
+      console.log('Fetching profile for ID:', creatorId);
+      const response = await axios.get(
+        `https://chefio-beta.vercel.app/api/v1/user/get-profile/${creatorId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log('Profile response:', response.data);
+      if (response.data && response.data.profile) {
+        const profileId = response.data.profile._id;
+        console.log('Profile ID:', profileId);
+        const profileUrl = `/profile/${profileId}`;
+        console.log('Navigating to:', profileUrl);
+        router.push(profileUrl);
+      } else {
+        console.error('Profile data not found in response:', response.data);
+      }
+    } catch (error) {
+      console.error('Error in handleSidebarProfileClick:', error);
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -330,10 +457,32 @@ export default function RecipePage() {
             </div>
             <div className={styles.infoColumn}>
               <div className={styles.authorLikeRow}>
-                <Link href={`/profile/${recipe.createdBy.username}`} className={styles.authorProfileLink} aria-label={`View ${recipe.createdBy.username}'s profile`}>
-                  <Image src={recipe.createdBy.profilePicture} alt={recipe.createdBy.username} width={40} height={40} className={styles.avatar} />
-                  <span className={styles.authorName}>{recipe.createdBy.username}</span>
-                </Link>
+                <div 
+                  className={styles.authorProfileLink} 
+                  onClick={handleSidebarProfileClick}
+                  style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                >
+                  <Image 
+                    src={recipe.createdBy.profilePicture} 
+                    alt={recipe.createdBy.username} 
+                    width={40} 
+                    height={40} 
+                    className={styles.avatar}
+                    onClick={handleSidebarProfileClick}
+                  />
+                  <span 
+                    className={styles.authorName} 
+                    onClick={handleSidebarProfileClick}
+                    style={{ 
+                      cursor: 'pointer', 
+                      color: '#007bff', 
+                      textDecoration: 'underline',
+                      userSelect: 'none'
+                    }}
+                  >
+                    {recipe.createdBy.username}
+                  </span>
+                </div>
                 <div className={styles.actionButtons}>
                   <LikeButton initialLiked={recipe.isLiked} initialCount={recipe.likes} recipeId={recipe._id} />
                   <DeleteButton recipeId={recipe._id} isOwner={isOwner} />

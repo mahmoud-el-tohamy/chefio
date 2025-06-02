@@ -169,8 +169,10 @@ const ProfilePage = () => {
         const payload = parseJwt(token);
         const userId = payload?.userId;
         setUserId(userId);
+        
+        // Use the ID from URL params to fetch the profile
         const response = await axios.get(
-          `https://chefio-beta.vercel.app/api/v1/user/get-profile/${userId}`,
+          `https://chefio-beta.vercel.app/api/v1/user/get-profile/${username}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -181,9 +183,6 @@ const ProfilePage = () => {
           setProfile(response.data.profile);
           setIsFollowing(response.data.profile.isFollowing === "following");
           setPageUsername(response.data.profile.username);
-          if (response.data.profile._id && username !== response.data.profile._id) {
-            router.replace(`/profile/${response.data.profile._id}`);
-          }
         } else {
           setError(response.data.message || "Failed to fetch profile");
         }
@@ -287,7 +286,59 @@ const ProfilePage = () => {
   }, [tab, profile?._id, followersList.length]);
 
   const isCurrentUser = userId === (profile?._id || "");
-  const handleFollow = () => setIsFollowing((prev) => !prev);
+  const handleFollow = async () => {
+    if (!profile?._id) {
+      console.error('Profile ID is missing for follow action.');
+      return;
+    }
+
+    const targetProfileId = profile._id;
+    const action = isFollowing ? 'unfollow' : 'follow';
+    console.log(`${action}ing profile with ID: ${targetProfileId}`);
+
+    // Optimistically update the UI
+    setIsFollowing((prev) => !prev);
+    // Optionally update followers count optimistically here if available in profile state
+
+    try {
+      let token = getAccessToken() || "";
+      if (!token) {
+        console.error('No authorization token found');
+        // Revert optimistic update if auth is required and missing
+        setIsFollowing((prev) => !prev);
+        return;
+      }
+
+      const method = isFollowing ? 'post' : 'post'; // Use DELETE for unfollow, POST for follow
+      const response = await axios({
+        method: method,
+        url: `https://chefio-beta.vercel.app/api/v1/chef/follow/${targetProfileId}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log(`${action} API response:`, response.data);
+
+      if (response.data.success) {
+        console.log(response.data.message);
+        // If the API returns updated counts, you might want to sync them here
+        // e.g., setProfile(prev => ({ ...prev, followersCount: response.data.newFollowersCount }));
+      } else {
+        console.error(`Failed to ${action}:`, response.data.message);
+        // Revert optimistic update on API error
+        setIsFollowing((prev) => !prev);
+        // Optionally revert followers count update here
+        alert(`Failed to ${action}: ${response.data.message}`);
+      }
+    } catch (error: any) {
+      console.error(`Error ${action}ing profile:`, error);
+      // Revert optimistic update on network/other error
+      setIsFollowing((prev) => !prev);
+      // Optionally revert followers count update here
+      alert(`An error occurred while trying to ${action}.`);
+    }
+  };
 
   // Share profile link handler
   const handleShare = () => {

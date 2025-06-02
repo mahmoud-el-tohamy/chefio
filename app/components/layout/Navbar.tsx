@@ -12,6 +12,7 @@ import HomeIcon from "@/components/icons/HomeIcon";
 import ProfileIcon from "@/components/icons/ProfileIcon";
 import MenuIcon from "@/components/icons/MenuIcon";
 import { createPortal } from "react-dom";
+import Cookies from "js-cookie";
 
 function Navbar() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -24,6 +25,7 @@ function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+  const [userId, setUserId] = useState<string>("");
 
   const fetchNotifications = async () => {
     try {
@@ -67,6 +69,20 @@ function Navbar() {
     return () => setMounted(false);
   }, []);
 
+  useEffect(() => {
+    const token = Cookies.get('Authorization');
+    if (token) {
+      try {
+        // Remove 'Bearer ' prefix if it exists
+        const cleanToken = token.startsWith('Bearer ') ? token.substring(7) : token;
+        const payload = JSON.parse(atob(cleanToken.split('.')[1]));
+        setUserId(payload.id || payload._id || payload.userId || payload.user_id);
+      } catch (err) {
+        console.error('Error decoding token:', err);
+      }
+    }
+  }, []);
+
   const handleNotificationsToggle = () => {
     const newIsOpen = !isNotificationsOpen;
     setIsNotificationsOpen(newIsOpen);
@@ -77,7 +93,7 @@ function Navbar() {
     }
   };
 
-  const isOwnProfile = pathname === `/profile/${currentUser.username}`;
+  const isOwnProfile = pathname === `/profile/${userId}`;
 
   return (
     <nav className={styles.navbar}>
@@ -124,7 +140,7 @@ function Navbar() {
           />
         </Link>
         <Link
-          href={`/profile/${currentUser.username}`}
+          href={`/profile/${userId}`}
           className={styles.navLink}
         >
           <ProfileIcon className={isOwnProfile ? styles.active : undefined} />
@@ -173,7 +189,7 @@ function Navbar() {
             Create Recipe
           </Link>
           <Link
-            href={`/profile/${currentUser.username}`}
+            href={`/profile/${userId}`}
             className={styles.mobileNavLink}
             onClick={() => setMobileMenuOpen(false)}
           >
