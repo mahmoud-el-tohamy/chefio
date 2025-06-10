@@ -13,19 +13,19 @@ interface RecipeCardProps {
 const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
   return (
     <div className={styles.card}>
-      <Link href={`/recipes/${recipe.id}`} className={styles.imageContainer} aria-label={`View details for ${recipe.title}`} tabIndex={-1}>
+      <Link href={`/recipes/${recipe._id}`} className={styles.imageContainer} aria-label={`View details for ${recipe.foodName}`} tabIndex={-1}>
         <Image
-          src={recipe.image}
-          alt={`Image of ${recipe.title}`}
+          src={recipe.recipePicture}
+          alt={recipe.foodName}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className={styles.image}
-          priority
+          priority={false}
         />
       </Link>
       <div className={styles.content}>
-        <Link href={`/recipes/${recipe.id}`} className={styles.title} aria-label={`View details for ${recipe.title}`} tabIndex={-1}>
-          {recipe.title}
+        <Link href={`/recipes/${recipe._id}`} className={styles.title} aria-label={`View details for ${recipe.foodName}`} tabIndex={-1}>
+          {recipe.foodName}
         </Link>
         <div className={styles.footer}>
           <div className={styles.author}>
