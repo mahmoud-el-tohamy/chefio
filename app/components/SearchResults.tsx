@@ -50,13 +50,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({
       
       <div className={styles.grid}>
         {results.map((recipe) => (
-          <div key={recipe.id} className={styles.recipeCard}>
+          <div key={recipe._id} className={styles.recipeCard}>
             <div className={styles.imageContainer}>
               <Image
-                src={recipe.image}
-                alt={`Image of ${recipe.title}`}
-                fill
-                className={styles.image}
+                src={recipe.imageUrl}
+                alt={recipe.title}
+                width={200}
+                height={150}
+                className={styles.recipeImage}
               />
               <button 
                 className={`${styles.favoriteButton} ${recipe.isLiked ? styles.liked : ''}`}
@@ -82,12 +83,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({
               <span className={styles.authorName}>{recipe.author.name}</span>
             </div>
 
-            <h3 className={styles.recipeTitle}>{recipe.title}</h3>
-            
-            <div className={styles.recipeDetails}>
-              <span>{recipe.category}</span>
-              <span>•</span>
-              <span>{recipe.duration}</span>
+            <div className={styles.recipeInfo}>
+              <h3 className={styles.recipeTitle}>{recipe.title}</h3>
+              <p className={styles.recipeDescription}>{recipe.description}</p>
+              <div className={styles.recipeMeta}>
+                <span className={styles.category}>{recipe.category}</span>
+                <span className={styles.duration}>{recipe.cookingDuration} mins</span>
+              </div>
             </div>
           </div>
         ))}
