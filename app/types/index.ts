@@ -28,6 +28,11 @@ export interface Recipe {
   updatedAt: string;
   likes: number;
   isLiked?: boolean;
+  createdBy: {
+    _id: string;
+    username: string;
+    profilePicture: string;
+  };
 }
 
 export interface RecipeResponse {
