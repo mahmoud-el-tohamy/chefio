@@ -1,157 +1,122 @@
 import React, { useState } from 'react';
 import styles from '@/styles/CreateRecipe.module.css';
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
 interface Step2Props {
-  onNext: (data: { ingredients: string[]; steps: string[] }) => void;
+  onNext: (data: { ingredients: string[]; instructions: string[] }) => void;
   onBack: () => void;
-  onCancel: () => void;
-  initialData: { ingredients: string[]; steps: string[] };
+  initialData?: {
+    ingredients?: string[];
+    instructions?: string[];
+  };
 }
 
-function reorder<T>(list: T[], startIndex: number, endIndex: number): T[] {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-  return result;
-}
+const Step2: React.FC<Step2Props> = ({ onNext, onBack, initialData }) => {
+  const [ingredients, setIngredients] = useState<string[]>(initialData?.ingredients || ['']);
+  const [instructions, setInstructions] = useState<string[]>(initialData?.instructions || ['']);
 
-export default function Step2({ onNext, onBack, onCancel, initialData }: Step2Props) {
-  const [ingredients, setIngredients] = useState(initialData.ingredients.length > 0 ? initialData.ingredients : ['', '', '']);
-  const [steps, setSteps] = useState(initialData.steps.length > 0 ? initialData.steps : ['']);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
-  const handleIngredientChange = (idx: number, value: string) => {
+  const handleIngredientChange = (index: number, value: string) => {
     const newIngredients = [...ingredients];
-    newIngredients[idx] = value;
+    newIngredients[index] = value;
     setIngredients(newIngredients);
-    setErrors(prev => ({ ...prev, ingredients: '' }));
-  };
-  const handleAddIngredient = () => setIngredients([...ingredients, '']);
-
-  const handleStepChange = (idx: number, value: string) => {
-    const newSteps = [...steps];
-    newSteps[idx] = value;
-    setSteps(newSteps);
-    setErrors(prev => ({ ...prev, steps: '' }));
-  };
-  const handleAddStep = () => {
-    setSteps([...steps, '']);
   };
 
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-    if (result.type === 'ingredient') {
-      setIngredients(reorder(ingredients, result.source.index, result.destination.index));
-    } else if (result.type === 'step') {
-      setSteps(reorder(steps, result.source.index, result.destination.index));
-    }
+  const handleInstructionChange = (index: number, value: string) => {
+    const newInstructions = [...instructions];
+    newInstructions[index] = value;
+    setInstructions(newInstructions);
   };
 
-  const validateStep2 = () => {
-    const newErrors: { [key: string]: string } = {};
-    
-    const hasValidIngredient = ingredients.some(ing => ing.trim() !== '');
-    if (!hasValidIngredient) {
-      newErrors.ingredients = 'Please add at least one ingredient';
-    }
-
-    const hasValidStep = steps.some(step => step.trim() !== '');
-    if (!hasValidStep) {
-      newErrors.steps = 'Please add at least one step';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const addIngredient = () => {
+    setIngredients([...ingredients, '']);
   };
 
-  const handleNextClick = () => {
-    if (validateStep2()) {
-      onNext({
-        ingredients: ingredients.filter(ing => ing.trim() !== ''),
-        steps: steps.filter(step => step.trim() !== ''),
-      });
-    }
+  const addInstruction = () => {
+    setInstructions([...instructions, '']);
+  };
+
+  const removeIngredient = (index: number) => {
+    const newIngredients = ingredients.filter((_, i) => i !== index);
+    setIngredients(newIngredients.length ? newIngredients : ['']);
+  };
+
+  const removeInstruction = (index: number) => {
+    const newInstructions = instructions.filter((_, i) => i !== index);
+    setInstructions(newInstructions.length ? newInstructions : ['']);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onNext({
+      ingredients: ingredients.filter(ing => ing.trim() !== ''),
+      instructions: instructions.filter(inst => inst.trim() !== '')
+    });
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div className={styles.stepContainer}>
-        <div className={styles.headerRow}>
-          <span className={styles.stepTitle}>Upload Your Post <span className={styles.stepCount}>2/2</span></span>
-          <button className={styles.cancelBtn} onClick={onCancel}>Cancel</button>
-        </div>
-        <div className={styles.ingredientSection}>
-          <div className={styles.ingredientHeaderRow}>
-            <span className={styles.inputLabel}>Ingredients</span>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <div className={styles.formGroup}>
+        <label>Ingredients</label>
+        {ingredients.map((ingredient, index) => (
+          <div key={index} className={styles.inputGroup}>
+            <input
+              type="text"
+              value={ingredient}
+              onChange={(e) => handleIngredientChange(index, e.target.value)}
+              placeholder={`Ingredient ${index + 1}`}
+              required
+            />
+            {ingredients.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeIngredient(index)}
+                className={styles.removeButton}
+              >
+                Remove
+              </button>
+            )}
           </div>
-          <Droppable droppableId="ingredients" type="ingredient">
-            {(provided) => (
-              <div ref={provided.innerRef} {...provided.droppableProps}>
-                {ingredients.map((ingredient, idx) => (
-                  <Draggable key={idx} draggableId={`ingredient-${idx}`} index={idx}>
-                    {(provided, snapshot) => (
-                      <div
-                        className={styles.ingredientRow}
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                      >
-                        <span className={styles.dragIcon} {...provided.dragHandleProps}>⋮⋮</span>
-                        <input
-                          className={`${styles.input} ${errors.ingredients ? styles.inputError : ''}`}
-                          type="text"
-                          placeholder="Enter ingredient"
-                          value={ingredient}
-                          onChange={e => handleIngredientChange(idx, e.target.value)}
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-          {errors.ingredients && <div className={styles.errorText}>{errors.ingredients}</div>}
-          <button className={styles.addIngredientBtn} onClick={handleAddIngredient}>+ Ingredient</button>
-        </div>
-        <div className={styles.stepsSection}>
-          <span className={styles.inputLabel}>Steps</span>
-          <Droppable droppableId="steps" type="step">
-            {(provided) => (
-              <div ref={provided.innerRef} {...provided.droppableProps}>
-                {steps.map((step, idx) => (
-                  <Draggable key={idx} draggableId={`step-${idx}`} index={idx}>
-                    {(provided, snapshot) => (
-                      <div
-                        className={styles.stepRow}
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                      >
-                        <span className={styles.stepNumber}>{idx + 1}</span>
-                        <span className={styles.dragIcon} {...provided.dragHandleProps}>⋮⋮</span>
-                        <textarea
-                          className={`${styles.textarea} ${errors.steps ? styles.inputError : ''}`}
-                          placeholder="Tell a little about your food"
-                          value={step}
-                          onChange={e => handleStepChange(idx, e.target.value)}
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-          {errors.steps && <div className={styles.errorText}>{errors.steps}</div>}
-          <button className={styles.addStepBtn} onClick={handleAddStep}>+ Step</button>
-        </div>
-        <div className={styles.buttonRow}>
-          <button className={styles.backBtn} onClick={onBack}>Back</button>
-          <button className={styles.nextBtn} onClick={handleNextClick}>Next</button>
-        </div>
+        ))}
+        <button type="button" onClick={addIngredient} className={styles.addButton}>
+          Add Ingredient
+        </button>
       </div>
-    </DragDropContext>
+
+      <div className={styles.formGroup}>
+        <label>Instructions</label>
+        {instructions.map((instruction, index) => (
+          <div key={index} className={styles.inputGroup}>
+            <textarea
+              value={instruction}
+              onChange={(e) => handleInstructionChange(index, e.target.value)}
+              placeholder={`Step ${index + 1}`}
+              required
+            />
+            {instructions.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeInstruction(index)}
+                className={styles.removeButton}
+              >
+                Remove
+              </button>
+            )}
+          </div>
+        ))}
+        <button type="button" onClick={addInstruction} className={styles.addButton}>
+          Add Step
+        </button>
+      </div>
+
+      <div className={styles.buttonGroup}>
+        <button type="button" onClick={onBack} className={styles.backButton}>
+          Back
+        </button>
+        <button type="submit" className={styles.submitButton}>
+          Create Recipe
+        </button>
+      </div>
+    </form>
   );
-} 
+};
+
+export default Step2; 

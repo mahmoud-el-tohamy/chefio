@@ -8,7 +8,7 @@ export const mockRecipes = [
     recipePicture: "/images/recipes/pancake.jpg",
     category: {
       _id: "1",
-      name: "Food"
+      name: "Breakfast"
     },
     cookingDuration: 60,
     createdBy: {
@@ -30,7 +30,7 @@ export const mockRecipes = [
     recipePicture: "/images/recipes/salad.jpg",
     category: {
       _id: "2",
-      name: "Food"
+      name: "Lunch"
     },
     cookingDuration: 30,
     createdBy: {
@@ -47,49 +47,47 @@ export const mockRecipes = [
     isLiked: false
   },
   {
-    id: "3",
-    title: "Salad",
-    image: "/images/recipes/salad2.jpg",
-    category: "Food" as Category,
-    duration: ">60 mins",
-    author: {
-      id: "3",
-      username: "john",
-      name: "John Priyadi",
-      avatar: "/images/avatars/john.jpg",
-      email: "john@example.com",
-      recipes: 0,
-      following: 0,
-      followers: 0
+    _id: "3",
+    foodName: "Caesar Salad",
+    recipePicture: "/images/recipes/salad2.jpg",
+    category: {
+      _id: "2",
+      name: "Lunch"
     },
-    description: "",
-    ingredients: [],
-    steps: [],
-    createdAt: "",
-    updatedAt: "",
-    cookingTime: ""
+    cookingDuration: 45,
+    createdBy: {
+      _id: "3",
+      username: "john",
+      profilePicture: "/images/avatars/john.jpg"
+    },
+    description: "Classic Caesar salad with homemade dressing",
+    ingredients: ["romaine lettuce", "croutons", "parmesan cheese", "caesar dressing"],
+    instructions: ["Wash and chop lettuce", "Add croutons and cheese", "Drizzle with dressing"],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    likes: 0,
+    isLiked: false
   },
   {
-    id: "4",
-    title: "Pancake",
-    image: "/images/recipes/pancake2.jpg",
-    category: "Food" as Category,
-    duration: ">60 mins",
-    author: {
-      id: "4",
-      username: "elena",
-      name: "Elena Shelby",
-      avatar: "/images/avatars/elena.jpg",
-      email: "elena@example.com",
-      recipes: 0,
-      following: 0,
-      followers: 0
+    _id: "4",
+    foodName: "Blueberry Pancakes",
+    recipePicture: "/images/recipes/pancake2.jpg",
+    category: {
+      _id: "1",
+      name: "Breakfast"
     },
-    description: "",
-    ingredients: [],
-    steps: [],
-    createdAt: "",
-    updatedAt: "",
-    cookingTime: ""
+    cookingDuration: 30,
+    createdBy: {
+      _id: "4",
+      username: "elena",
+      profilePicture: "/images/avatars/elena.jpg"
+    },
+    description: "Fluffy pancakes with fresh blueberries",
+    ingredients: ["flour", "eggs", "milk", "blueberries", "sugar"],
+    instructions: ["Mix dry ingredients", "Add wet ingredients", "Fold in blueberries", "Cook on griddle"],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    likes: 0,
+    isLiked: false
   }
 ]; 
