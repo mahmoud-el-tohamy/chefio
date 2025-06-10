@@ -1,0 +1,750 @@
+.main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 6rem 1rem 3rem 1rem; /* 6rem top for navbar space */
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--main-text-color);
+  margin-bottom: 1.5rem;
+  margin-top: 4rem;
+  letter-spacing: 0.01em;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem 3rem;
+}
+
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.imageWrapper {
+  flex-shrink: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+  width: 260px;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recipeImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.authorRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: nowrap;
+}
+
+.authorProfileLink {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+  text-decoration: none;
+  margin: 8px 20px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--outline-color);
+}
+
+.authorName {
+  font-weight: 600;
+  color: var(--main-text-color);
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.likeButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  color: var(--main-text-color);
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 2rem 0.5rem 1.2rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+  box-shadow: none;
+  min-width: 120px;
+  min-height: 44px;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.likeButton:hover {
+  background: #f4f5f7;
+  color: var(--primary-color);
+}
+.likeButton.liked {
+  background: none;
+  color: var(--primary-color);
+}
+.likeIcon {
+  display: flex;
+  align-items: center;
+  margin-right: 0.5rem;
+}
+.likeCount {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: inherit;
+}
+
+.categoryRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--secondary-text-color);
+  font-size: 0.95rem;
+}
+.category {
+  font-weight: 500;
+}
+.dot {
+  font-size: 1.2rem;
+  color: var(--outline-color);
+}
+.duration {
+  color: var(--secondary-text-color);
+}
+
+.descriptionBox {
+  background: #f9f9f9;
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.sectionTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--main-text-color);
+  margin-bottom: 0.7rem;
+}
+.descriptionText {
+  color: var(--secondary-text-color);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.ingredientsBox {
+  background: #f9f9f9;
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.ingredientsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.ingredientItem {
+  display: flex;
+  align-items: center;
+  font-size: 1.08rem;
+  color: var(--main-text-color);
+  margin-bottom: 0.6rem;
+  font-weight: 500;
+}
+.checkIcon {
+  color: var(--primary-color);
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+}
+
+.stepsBox {
+  background: #f9f9f9;
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.stepsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.stepItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.stepNumber {
+  min-width: 32px;
+  min-height: 32px;
+  background: var(--main-text-color);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-top: 0.2rem;
+}
+.stepContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.stepText {
+  color: var(--main-text-color);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+.stepImage {
+  width: 180px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-top: 0.3rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+
+/* Desktop & tablet styles: min-width 700px */
+@media (min-width: 700px) {
+  .gridLayout {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    min-height: 600px;
+  }
+  .stickyColumn {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 40%;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    z-index: 2;
+    border-right: 1px solid #f0f0f0;
+    box-shadow: 2px 0 16px rgba(0,0,0,0.06);
+    border-radius: 0 32px 32px 0;
+    padding: 2.5rem 2rem 2.5rem 2.5rem;
+    margin-top: 3.5rem;
+  }
+  .sidebarTitle {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--main-text-color);
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+    letter-spacing: 0.01em;
+    text-align: center;
+    line-height: 1.1;
+    word-break: break-word;
+  }
+  .coverImageWrapper {
+    width: 250px;
+    height: 250px;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(31,204,121,0.10);
+    aspect-ratio: 1/1;
+  }
+  .coverImage {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 24px;
+    aspect-ratio: 1/1;
+  }
+  .scrollColumn {
+    grid-column: 2;
+    margin-top: 2rem;
+    height: auto;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 100%;
+  }
+  .stepsBox {
+    width: 100%;
+    margin: 0 auto;
+  }
+}
+
+/* Mobile: stacked layout for max-width 699px */
+@media (max-width: 699px) {
+  .main {
+    padding: 4.5rem 0.5rem 2rem 0.5rem;
+  }
+  .gridLayout {
+    display: block;
+    gap: 0;
+  }
+  .stickyColumn {
+    align-items: center;
+    margin-bottom: 1.2rem;
+    /* gap: 1.2rem; */
+    position: static;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    box-shadow: none;
+    border-radius: 0;
+    justify-content: flex-start;
+    overflow: visible;
+  }
+  .sidebarTitle {
+    margin-top: 0.5rem;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.7rem;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .coverImageWrapper {
+    border-radius: 20px;
+    width: 90vw;
+    max-width: 320px;
+    height: 90vw;
+    max-height: 320px;
+    margin: 0 auto 1.2rem auto;
+    aspect-ratio: 1/1;
+  }
+  .coverImage {
+    border-radius: 20px;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1/1;
+  }
+  .infoColumn {
+    align-items: center;
+  }
+  .authorLikeRow {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    margin-top: 10px;
+  }
+  .authorProfileLink {
+    margin: 0;
+  }
+  .likeButton {
+    margin-left: 0;
+    gap: 0rem;
+    padding: 0.5rem 1.2rem 0.5rem 1.2rem;
+  }
+  .descriptionBox, .ingredientsBox, .stepsBox {
+    padding: 1.1rem 0.7rem;
+    border-radius: 14px;
+    margin: 0.7rem 0;
+    font-size: 0.98rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .sectionTitle {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  .metaRow {
+    font-size: 0.98rem;
+    gap: 0.5rem;
+  }
+  .stepsList {
+    gap: 0.7rem;
+  }
+  .stepItem {
+    gap: 0.7rem;
+    margin-bottom: 1.1rem;
+  }
+  .stepNumber {
+    min-width: 28px;
+    min-height: 28px;
+    font-size: 1rem;
+  }
+  .stepText {
+    font-size: 0.98rem;
+  }
+  .ingredientsBox {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto 1.2rem auto;
+  }
+  .ingredientItem {
+    font-size: 0.98rem;
+    margin-bottom: 0.4rem;
+  }
+  .actionButtons {
+    gap: 0.3rem;
+  }
+  
+  .deleteButton {
+    width: 36px;
+    height: 36px;
+    margin-left: 0.3rem;
+  }
+  
+  .trashIcon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.infoColumn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.authorLikeRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  gap: 1rem;
+  margin: 5px 0;
+}
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.descriptionBox {
+  background: #f9f9f9;
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  width: 100%;
+  margin-bottom: 0;
+}
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--secondary-text-color);
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+.category {
+  font-weight: 500;
+  color: var(--main-text-color);
+}
+.dot {
+  font-size: 1.2rem;
+  color: var(--outline-color);
+}
+.duration {
+  color: var(--secondary-text-color);
+}
+
+.hideOnTablet {
+  display: block;
+}
+.showOnTablet {
+  display: none;
+}
+@media (min-width: 700px) and (max-width: 1100px) {
+  .hideOnTablet {
+    display: none !important;
+  }
+  .showOnTablet {
+    display: block !important;
+  }
+  .stickyColumn {
+    margin-top: 20px !important;
+  }
+}
+@media (max-width: 699px), (min-width: 1101px) {
+  .hideOnTablet {
+    display: block !important;
+  }
+  .showOnTablet {
+    display: none !important;
+  }
+} 
+
+@media (min-width: 1100px) {
+  .stickyColumn {
+    margin-top: 35px !important;
+  }
+}
+
+.sidebarTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 1.2rem;
+  color: var(--main-text-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.deleteButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  color: #ff4d4d;
+  background-color: rgba(255, 77, 77, 0.1);
+}
+
+.deleteButton:hover {
+  background-color: var(--secondary-color);
+  transform: scale(1.1);
+  color: white;
+}
+.deleteButton:hover .trashIcon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z'/%3E%3C/svg%3E");
+}
+
+.deleteButton:active {
+  transform: scale(0.95);
+}
+
+.deleteButton.hidden {
+  display: none;
+}
+
+.trashIcon {
+  width: 20px;
+  height: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff4d4d'%3E%3Cpath d='M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.confirmationDialogOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.editRecipe {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  color: var(--primary-color);
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+  border: none;
+}
+
+.editRecipe:hover {
+  background-color: var(--primary-color);
+  transform: scale(1.1);
+  color: white;
+}
+
+.editRecipe:hover img {
+  filter: brightness(0) invert(1);
+}
+
+.editRecipe:active {
+  transform: scale(0.95);
+}
+
+.editRecipe.hidden {
+  display: none;
+}
+
+.confirmationDialog {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.confirmationDialog p {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.dialogButtons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.confirmButton {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.confirmButton:hover {
+  background-color: #ff3333;
+  transform: translateY(-1px);
+}
+
+.confirmButton:disabled {
+  background-color: #ffb3b3;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.cancelButton:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-1px);
+}
+
+.cancelButton:disabled {
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* Add animation for the delete button */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.deleteButton {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Add hover effect for the trash icon */
+.deleteButton:hover .trashIcon {
+  transform: scale(1.1);
+  filter: brightness(1.1);
+}
+
+/* Add responsive styles */
+@media (max-width: 768px) {
+  .deleteButton {
+    padding: 6px;
+  }
+  
+  .trashIcon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .confirmationDialog {
+    width: 85%;
+    padding: 20px;
+  }
+  
+  .dialogButtons {
+    flex-direction: column;
+  }
+  
+  .confirmButton,
+  .cancelButton {
+    width: 100%;
+  }
+}
+
+.error {
+  text-align: center;
+  padding: 3rem 1rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.error h2 {
+  font-size: 2rem;
+  color: var(--main-text-color);
+  margin-bottom: 1rem;
+}
+
+.error p {
+  font-size: 1.1rem;
+  color: var(--secondary-text-color);
+  margin-bottom: 2rem;
+}
+
+.backButton {
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  background: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.backButton:hover {
+  background: var(--primary-dark);
+}

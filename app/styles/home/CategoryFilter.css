@@ -1,0 +1,46 @@
+/* CategoryFilter.css */
+
+.category-filter {
+  display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+}
+
+.category-filter__label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #2d2d2d;
+  white-space: nowrap;
+}
+
+.category-filter__buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap; /* Allow buttons to wrap to the next line */
+  justify-content: center;
+}
+
+.category-btn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  color: #2d2d2d;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+  min-width: fit-content;
+  height: 35px;
+  white-space: nowrap; /* Prevent text wrapping inside buttons */
+}
+
+.category-btn:hover {
+  background-color: #dedede;
+}
+
+.category-btn.active {
+  background-color: #5ab27e; /* Green */
+  color: #fff;
+}

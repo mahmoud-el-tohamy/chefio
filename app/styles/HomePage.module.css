@@ -1,0 +1,158 @@
+.container {
+  min-height: 100vh;
+  background-color: var(--background-color);
+}
+
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  padding-top: calc(2rem + 64px); /* Add top padding to account for fixed navbar height (adjust 64px if navbar height changes) */
+}
+
+.topSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap; /* Allow items to wrap to the next line */
+  width: 100%; /* Ensure it takes full width */
+}
+
+.filterSection {
+  flex: 1 1 auto; /* Allow it to grow and shrink, with a preferred size based on content */
+  min-width: 250px; /* Minimum width for the filter section */
+  max-width: 100%; /* Ensure it doesn't overflow */
+}
+
+/* Style for the SearchBar container within topSection on larger screens */
+.topSection :global(.SearchBar_searchContainer__v_9w8) {
+  flex-grow: 1; /* Allow search bar to take available space */
+  flex-shrink: 1; /* Allow it to shrink */
+  min-width: 250px; /* Minimum width for the search bar */
+  max-width: 100%; /* Ensure it doesn't overflow */
+}
+
+@media (max-width: 1155px) {
+  .topSection {
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items when stacked */
+  }
+
+  .filterSection,
+  .topSection :global(.SearchBar_searchContainer__v_9w8) {
+    width: 100%; /* Take full width when stacked */
+  }
+}
+
+@media (max-width: 768px) {
+  .topSection {
+    flex-direction: column;
+  }
+
+  .filterSection {
+    flex: 1;
+    width: 100%;
+  }
+}
+
+.categoryTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px; /* Reverted to original 200px */
+  font-size: 1.2rem;
+  color: var(--text-color);
+}
+
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 1.2rem;
+  color: #dc2626;
+  text-align: center;
+  padding: 1rem;
+  background-color: #fee2e2;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1rem;
+}
+
+.paginationButton {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.content {
+  text-align: center;
+  max-width: 800px; 
+  width: 100%;
+  margin: 0px auto;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+@media (min-width: 1024px) {
+  .title {
+    font-size: 3rem;
+  }
+}
+
+.brand {
+  color: var(--primary-color);
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: var(--secondary-text-color);
+  margin-bottom: 1.5rem;
+}
+
+.loginText {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: #333;
+}
