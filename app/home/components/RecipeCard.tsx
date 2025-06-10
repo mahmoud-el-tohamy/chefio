@@ -28,25 +28,18 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
           {recipe.foodName}
         </Link>
         <div className={styles.footer}>
-          <div className={styles.author}>
-            <Link href={`/profile/${recipe.author.username}`} className={styles.authorProfileLink} aria-label={`View ${recipe.author.name}'s profile`} onClick={e => e.stopPropagation()}>
-              <UserAvatar
-                src={recipe.author.avatar}
-                alt={`Avatar of ${recipe.author.name}`}
-                size={32}
-                className={styles.authorAvatar}
-              />
-              <span className={styles.authorName}>{recipe.author.name}</span>
-            </Link>
-          </div>
-          <div className={styles.time}>
-            <Image
-              src="/icons/time.svg"
-              alt="Cooking time"
-              width={16}
-              height={16}
+          <Link href={`/profile/${recipe.createdBy.username}`} className={styles.author}>
+            <UserAvatar
+              src={recipe.createdBy.profilePicture}
+              alt={`Avatar of ${recipe.createdBy.username}`}
+              size={24}
+              className={styles.avatar}
             />
-            <span>{recipe.cookingTime}</span>
+            <span className={styles.authorName}>{recipe.createdBy.username}</span>
+          </Link>
+          <div className={styles.stats}>
+            <span className={styles.likes}>{recipe.likes} likes</span>
+            <span className={styles.duration}>{recipe.cookingDuration} mins</span>
           </div>
         </div>
       </div>
