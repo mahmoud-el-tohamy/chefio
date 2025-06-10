@@ -17,13 +17,16 @@ export interface User {
 
 export interface Recipe {
   _id: string;
-  title: string;
+  foodName: string;
   description: string;
   ingredients: string[];
   instructions: string[];
   cookingDuration: number;
-  category: string;
-  imageUrl: string;
+  category: {
+    _id: string;
+    name: string;
+  };
+  recipePicture: string;
   createdAt: string;
   updatedAt: string;
   likes: number;
