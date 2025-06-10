@@ -75,12 +75,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             
             <div className={styles.authorInfo}>
               <UserAvatar
-                src={recipe.author.avatar}
-                alt={`Avatar of ${recipe.author.name}`}
+                src={recipe.createdBy.profilePicture}
+                alt={`Avatar of ${recipe.createdBy.username}`}
                 size={32}
                 className={styles.avatar}
               />
-              <span className={styles.authorName}>{recipe.author.name}</span>
+              <span className={styles.authorName}>{recipe.createdBy.username}</span>
             </div>
 
             <div className={styles.recipeInfo}>
