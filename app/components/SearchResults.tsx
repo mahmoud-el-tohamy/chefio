@@ -61,7 +61,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
               />
               <button 
                 className={`${styles.favoriteButton} ${recipe.isLiked ? styles.liked : ''}`}
-                onClick={() => onToggleLike(recipe.id)}
+                onClick={() => onToggleLike(recipe._id)}
                 aria-label={recipe.isLiked ? `Remove ${recipe.title} from favorites` : `Add ${recipe.title} to favorites`}
               >
                 <Image
