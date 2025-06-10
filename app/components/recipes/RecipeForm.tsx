@@ -1,33 +1,55 @@
 import React, { useState } from 'react';
 import { Recipe } from '@/types';
 
+interface Category {
+  _id: string;
+  name: string;
+}
+
 interface RecipeFormProps {
   onSubmit: (data: {
     foodName: string;
     description: string;
     cookingDuration: number;
-    category: string;
+    category: Category;
     ingredients: string[];
     instructions: string[];
   }) => void;
 }
+
+const CATEGORIES: Category[] = [
+  { _id: "1", name: "Breakfast" },
+  { _id: "2", name: "Lunch" },
+  { _id: "3", name: "Dinner" },
+  { _id: "4", name: "Dessert" }
+];
 
 const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
     foodName: '',
     description: '',
     cookingDuration: 0,
-    category: '',
+    category: { _id: '', name: '' } as Category,
     ingredients: [] as string[],
     instructions: [] as string[]
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'cookingDuration' ? parseInt(value) : value,
-    }));
+    if (name === 'category') {
+      const selectedCategory = CATEGORIES.find(cat => cat._id === value);
+      if (selectedCategory) {
+        setFormData(prev => ({
+          ...prev,
+          category: selectedCategory
+        }));
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: name === 'cookingDuration' ? parseInt(value) : value,
+      }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -75,15 +97,16 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
         <select
           id="category"
           name="category"
-          value={formData.category}
+          value={formData.category._id}
           onChange={handleChange}
           required
         >
           <option value="">Select category</option>
-          <option value="Breakfast">Breakfast</option>
-          <option value="Lunch">Lunch</option>
-          <option value="Dinner">Dinner</option>
-          <option value="Dessert">Dessert</option>
+          {CATEGORIES.map(category => (
+            <option key={category._id} value={category._id}>
+              {category.name}
+            </option>
+          ))}
         </select>
       </div>
       <button type="submit">Submit</button>
