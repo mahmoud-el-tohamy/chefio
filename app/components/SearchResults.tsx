@@ -53,11 +53,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({
           <div key={recipe._id} className={styles.recipeCard}>
             <div className={styles.imageContainer}>
               <Image
-                src={recipe.imageUrl}
-                alt={recipe.title}
-                width={200}
-                height={150}
-                className={styles.recipeImage}
+                src={recipe.recipePicture}
+                alt={recipe.foodName}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className={styles.image}
+                priority={false}
               />
               <button 
                 className={`${styles.favoriteButton} ${recipe.isLiked ? styles.liked : ''}`}
