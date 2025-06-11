@@ -12,7 +12,7 @@ export default function RecipeGrid({ recipes }: RecipeGridProps) {
   return (
     <div className="recipe-grid">
       {recipes.map((recipe) => (
-        <RecipeCard key={recipe._id} recipe={recipe} />
+        <RecipeCard key={recipe.id} recipe={recipe} />
       ))}
     </div>
   );

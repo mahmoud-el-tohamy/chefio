@@ -6,30 +6,23 @@ import SuccessModal from '@/components/create-recipe/SuccessModal';
 import axios from 'axios';
 import { getAccessToken } from '@/services/auth';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
-import { Category } from '@/types';
 
 export default function CreateRecipePage() {
   const [step, setStep] = useState(1);
   const [showSuccess, setShowSuccess] = useState(false);
   const [recipeData, setRecipeData] = useState({
     foodName: '',
-    recipePicture: null as File | null,
+    coverPhoto: null as File | null,
     description: '',
     cookingDuration: 0,
     ingredients: [] as string[],
-    instructions: [] as string[],
-    category: { _id: '', name: '' } as unknown as Category,
+    steps: [] as string[],
+    category: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleStep1Complete = (data: { 
-    foodName: string; 
-    recipePicture: File | null; 
-    description: string; 
-    cookingDuration: number; 
-    category: Category 
-  }) => {
+  const handleStep1Complete = (data: { foodName: string; coverPhoto: File | null; description: string; cookingDuration: number; category: string }) => {
     setRecipeData(prev => ({
       ...prev,
       ...data,
@@ -51,12 +44,12 @@ export default function CreateRecipePage() {
 
       const formData = new FormData();
       formData.append('foodName', recipeData.foodName);
-      if (recipeData.recipePicture) {
-        formData.append('recipePicture', recipeData.recipePicture);
+      if (recipeData.coverPhoto) {
+        formData.append('recipePicture', recipeData.coverPhoto);
       }
       formData.append('description', recipeData.description);
       formData.append('cookingDuration', recipeData.cookingDuration.toString());
-      formData.append('category', recipeData.category._id);
+      formData.append('category', recipeData.category);
       formData.append('ingredients', JSON.stringify(data.ingredients));
       formData.append('steps', JSON.stringify(data.steps));
 
@@ -74,12 +67,12 @@ export default function CreateRecipePage() {
       setShowSuccess(true);
         setRecipeData({
           foodName: '',
-          recipePicture: null,
+          coverPhoto: null,
           description: '',
           cookingDuration: 0,
           ingredients: [],
-          instructions: [],
-          category: { _id: '', name: '' },
+          steps: [],
+          category: '',
         });
     } else {
         setError(response.data.message || "Failed to create recipe.");
@@ -98,9 +91,9 @@ export default function CreateRecipePage() {
     window.location.href = '/home';
   };
 
-  const step1InitialData: { foodName: string; recipePicture: string; description: string; cookingDuration: number; category: Category } = {
+  const step1InitialData: { foodName: string; recipePicture: string; description: string; cookingDuration: number; category: string } = {
     foodName: recipeData.foodName,
-    recipePicture: recipeData.recipePicture ? URL.createObjectURL(recipeData.recipePicture) : '',
+    recipePicture: recipeData.coverPhoto ? URL.createObjectURL(recipeData.coverPhoto) : '',
     description: recipeData.description,
     cookingDuration: recipeData.cookingDuration,
     category: recipeData.category,

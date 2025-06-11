@@ -53,17 +53,16 @@ const SearchResults: React.FC<SearchResultsProps> = ({
           <div key={recipe._id} className={styles.recipeCard}>
             <div className={styles.imageContainer}>
               <Image
-                src={recipe.recipePicture}
-                alt={recipe.foodName}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                className={styles.image}
-                priority={false}
+                src={recipe.imageUrl}
+                alt={recipe.title}
+                width={200}
+                height={150}
+                className={styles.recipeImage}
               />
               <button 
                 className={`${styles.favoriteButton} ${recipe.isLiked ? styles.liked : ''}`}
                 onClick={() => onToggleLike(recipe._id)}
-                aria-label={recipe.isLiked ? `Remove ${recipe.foodName} from favorites` : `Add ${recipe.foodName} to favorites`}
+                aria-label={recipe.isLiked ? `Remove ${recipe.title} from favorites` : `Add ${recipe.title} to favorites`}
               >
                 <Image
                   src={recipe.isLiked ? "/icons/heart-filled.svg" : "/icons/heart.svg"}
@@ -85,10 +84,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             </div>
 
             <div className={styles.recipeInfo}>
-              <h3 className={styles.recipeTitle}>{recipe.foodName}</h3>
-              <div className={styles.recipeDetails}>
-                <span className={styles.category}>{recipe.category.name}</span>
-                <span>•</span>
+              <h3 className={styles.recipeTitle}>{recipe.title}</h3>
+              <p className={styles.recipeDescription}>{recipe.description}</p>
+              <div className={styles.recipeMeta}>
+                <span className={styles.category}>{recipe.category}</span>
                 <span className={styles.duration}>{recipe.cookingDuration} mins</span>
               </div>
             </div>

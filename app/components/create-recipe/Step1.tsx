@@ -2,154 +2,214 @@ import React, { useState, useEffect } from 'react';
 import styles from '@/styles/CreateRecipe.module.css';
 import axios from 'axios';
 import { getAccessToken } from '@/services/auth';
-import { Category } from '@/types';
 
 interface Step1Props {
-  onNext: (data: { 
-    foodName: string; 
-    recipePicture: File | null; 
-    description: string; 
-    cookingDuration: number; 
-    category: Category 
-  }) => void;
+  onNext: (data: { foodName: string; coverPhoto: File | null; description: string; cookingDuration: number; category: string }) => void;
   onCancel: () => void;
-  initialData: { 
-    foodName: string; 
-    recipePicture: string; 
-    description: string; 
-    cookingDuration: number; 
-    category: Category;
-    ingredients?: string[]; 
-    instructions?: string[] 
-  };
+  initialData: { foodName: string; recipePicture: string; description: string; cookingDuration: number; category: string; ingredients?: string[]; steps?: string[] };
 }
 
-const CATEGORIES: Category[] = [
-  { _id: "1", name: "Breakfast" },
-  { _id: "2", name: "Lunch" },
-  { _id: "3", name: "Dinner" },
-  { _id: "4", name: "Dessert" }
-];
+interface Category {
+  _id: string;
+  name: string;
+}
 
-const Step1: React.FC<Step1Props> = ({ onNext, onCancel, initialData }) => {
-  const [formData, setFormData] = useState({
-    foodName: initialData.foodName || '',
-    recipePicture: null as File | null,
-    description: initialData.description || '',
-    cookingDuration: initialData.cookingDuration || 0,
-    category: initialData.category || { _id: '', name: '' }
-  });
+export default function Step1({ onNext, onCancel, initialData }: Step1Props) {
+  const [foodName, setFoodName] = useState(initialData.foodName);
+  const [description, setDescription] = useState(initialData.description);
+  const [duration, setDuration] = useState(initialData.cookingDuration);
+  const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(initialData.recipePicture || null);
+  const [category, setCategory] = useState(initialData.category);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    if (name === 'category') {
-      const selectedCategory = CATEGORIES.find(cat => cat._id === value);
-      if (selectedCategory) {
-        setFormData(prev => ({
-          ...prev,
-          category: selectedCategory
-        }));
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = getAccessToken();
+        const response = await axios.get(
+          'https://chefio-beta.vercel.app/api/v1/recipe/get-categories',
+          {
+            headers: {
+              Authorization: token ? `Bearer ${token}` : '',
+            },
+          }
+        );
+
+        if (response.data.success) {
+          setCategories(response.data.categories);
+        } else {
+          setError(response.data.message || "Failed to fetch categories.");
+        }
+      } catch (err: any) {
+        setError(err.response?.data?.message || err.message || "An error occurred while fetching categories.");
+      } finally {
+        setLoading(false);
       }
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: name === 'cookingDuration' ? parseInt(value) : value,
-      }));
-    }
-  };
+    };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (initialData.recipePicture && !coverPhoto) {
+      setCoverPreview(initialData.recipePicture);
+    }
+  }, [initialData.recipePicture, coverPhoto]);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFormData(prev => ({
-        ...prev,
-        recipePicture: e.target.files![0]
-      }));
+      const file = e.target.files[0];
+      setCoverPhoto(file);
+      setCoverPreview(URL.createObjectURL(file));
+      setErrors(prev => ({ ...prev, recipePicture: '' }));
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onNext(formData);
+  const validateStep1 = () => {
+    const newErrors: { [key: string]: string } = {};
+    
+    if (!coverPhoto && !initialData.recipePicture) {
+      newErrors.recipePicture = 'Please add a cover photo';
+    }
+    if (!foodName.trim()) {
+      newErrors.foodName = 'Please enter a food name';
+    }
+    if (!description.trim()) {
+      newErrors.description = 'Please enter a description';
+    }
+    if (!category.trim()) {
+      newErrors.category = 'Please select a category';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNextClick = () => {
+    if (validateStep1()) {
+      onNext({
+        foodName,
+        coverPhoto: coverPhoto,
+        description,
+        cookingDuration: duration,
+        category,
+      });
+    }
+  };
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCategory(e.target.value);
+    setErrors(prev => ({ ...prev, category: '' }));
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
-      <div className={styles.formGroup}>
-        <label htmlFor="foodName">Recipe Name</label>
-        <input
-          type="text"
-          id="foodName"
-          name="foodName"
-          value={formData.foodName}
-          onChange={handleChange}
-          required
-        />
+    <div className={styles.stepContainer}>
+      <div className={styles.headerRow}>
+        <span className={styles.stepTitle}>Upload Your Post <span className={styles.stepCount}>1/2</span></span>
+        <button className={styles.cancelBtn} onClick={onCancel}>Cancel</button>
       </div>
-
-      <div className={styles.formGroup}>
-        <label htmlFor="recipePicture">Cover Photo</label>
+      
+      <label className={styles.coverPhotoBox} htmlFor="cover-photo-input">
+        {coverPreview ? (
+          <img src={coverPreview} alt="Cover Preview" className={styles.coverPreview} />
+        ) : (
+          <div className={styles.coverPhotoPlaceholder}>
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M44 40L36.5858 32.5858C36.2107 32.2107 35.702 32 35.1716 32H28.8284C28.298 32 27.7893 32.2107 27.4142 32.5858L20 40" stroke="var(--outline-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="32" cy="28" r="4" stroke="var(--outline-color)" strokeWidth="2"/>
+            </svg>
+            <div className={styles.coverPhotoText}>Add Cover Photo</div>
+            <div className={styles.coverPhotoSubText}>(up to 12 Mb)</div>
+          </div>
+        )}
         <input
+          id="cover-photo-input"
           type="file"
-          id="recipePicture"
-          name="recipePicture"
           accept="image/*"
-          onChange={handleImageChange}
-          required={!initialData.recipePicture}
+          style={{ display: 'none' }}
+          onChange={handlePhotoChange}
         />
+      </label>
+      {errors.recipePicture && <div className={styles.errorText}>{errors.recipePicture}</div>}
+
+      <div className={styles.formRow}>
+        <div className={styles.formCol}>
+          <label className={styles.inputLabel}>Food Name</label>
+          <input
+            className={`${styles.input} ${errors.foodName ? styles.inputError : ''}`}
+            type="text"
+            placeholder="Enter food name"
+            value={foodName}
+            onChange={e => {
+              setFoodName(e.target.value);
+              setErrors(prev => ({ ...prev, foodName: '' }));
+            }}
+          />
+          {errors.foodName && <div className={styles.errorText}>{errors.foodName}</div>}
+        </div>
+        <div className={styles.formCol}>
+          <label className={styles.inputLabel}>Description</label>
+          <textarea
+            className={`${styles.textarea} ${errors.description ? styles.inputError : ''}`}
+            placeholder="Tell a little about your food"
+            value={description}
+            onChange={e => {
+              setDescription(e.target.value);
+              setErrors(prev => ({ ...prev, description: '' }));
+            }}
+          />
+          {errors.description && <div className={styles.errorText}>{errors.description}</div>}
+        </div>
+      </div>
+      
+      <div className={styles.durationRow}>
+        <label className={styles.inputLabel}>Cooking Duration (in minutes)</label>
+        <div className={styles.durationSliderRow}>
+          <span className={styles.durationLabel}>&lt;10</span>
+          <input
+            type="range"
+            min={1}
+            max={60}
+            value={duration}
+            onChange={e => setDuration(Number(e.target.value))}
+            className={styles.durationSlider}
+          />
+          <span className={styles.durationValue}>{duration}</span>
+          <span className={styles.durationLabel}>&gt;60</span>
+        </div>
       </div>
 
-      <div className={styles.formGroup}>
-        <label htmlFor="description">Description</label>
-        <textarea
-          id="description"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          required
-        />
+      <div className={styles.formRow}>
+        <div className={styles.formCol}>
+          <label className={styles.inputLabel}>Category</label>
+          <select
+            className={`${styles.input} ${errors.category ? styles.inputError : ''}`}
+            value={category}
+            onChange={handleCategoryChange}
+            disabled={loading}
+          >
+            <option value="">Select a category</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+          {errors.category && <div className={styles.errorText}>{errors.category}</div>}
+          {error && <div className={styles.errorText}>{error}</div>}
+        </div>
+        <div className={styles.formCol}></div>
       </div>
 
-      <div className={styles.formGroup}>
-        <label htmlFor="cookingDuration">Cooking Duration (minutes)</label>
-        <input
-          type="number"
-          id="cookingDuration"
-          name="cookingDuration"
-          value={formData.cookingDuration}
-          onChange={handleChange}
-          min="1"
-          required
-        />
+      <div className={styles.buttonRow}>
+        <button className={styles.nextBtn} onClick={handleNextClick}>Next</button>
       </div>
-
-      <div className={styles.formGroup}>
-        <label htmlFor="category">Category</label>
-        <select
-          id="category"
-          name="category"
-          value={formData.category._id}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Select a category</option>
-          {CATEGORIES.map(category => (
-            <option key={category._id} value={category._id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className={styles.buttonGroup}>
-        <button type="button" onClick={onCancel} className={styles.cancelButton}>
-          Cancel
-        </button>
-        <button type="submit" className={styles.nextButton}>
-          Next
-        </button>
-      </div>
-    </form>
+    </div>
   );
-};
-
-export default Step1; 
+} 

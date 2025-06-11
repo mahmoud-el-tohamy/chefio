@@ -1,55 +1,28 @@
 import React, { useState } from 'react';
-import { Recipe } from '@/types';
-
-interface Category {
-  _id: string;
-  name: string;
-}
 
 interface RecipeFormProps {
   onSubmit: (data: {
-    foodName: string;
+    title: string;
     description: string;
-    cookingDuration: number;
-    category: Category;
-    ingredients: string[];
-    instructions: string[];
+    cookingTime: string;
+    difficulty: string;
   }) => void;
 }
 
-const CATEGORIES: Category[] = [
-  { _id: "1", name: "Breakfast" },
-  { _id: "2", name: "Lunch" },
-  { _id: "3", name: "Dinner" },
-  { _id: "4", name: "Dessert" }
-];
-
 const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
-    foodName: '',
+    title: '',
     description: '',
-    cookingDuration: 0,
-    category: { _id: '', name: '' } as Category,
-    ingredients: [] as string[],
-    instructions: [] as string[]
+    cookingTime: '',
+    difficulty: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    if (name === 'category') {
-      const selectedCategory = CATEGORIES.find(cat => cat._id === value);
-      if (selectedCategory) {
-        setFormData(prev => ({
-          ...prev,
-          category: selectedCategory
-        }));
-      }
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: name === 'cookingDuration' ? parseInt(value) : value,
-      }));
-    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -60,12 +33,12 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <label htmlFor="foodName">Recipe Name</label>
+        <label htmlFor="title">Title</label>
         <input
           type="text"
-          id="foodName"
-          name="foodName"
-          value={formData.foodName}
+          id="title"
+          name="title"
+          value={formData.title}
           onChange={handleChange}
           required
         />
@@ -81,32 +54,29 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
         />
       </div>
       <div>
-        <label htmlFor="cookingDuration">Cooking Duration (minutes)</label>
+        <label htmlFor="cookingTime">Cooking Time</label>
         <input
           type="number"
-          id="cookingDuration"
-          name="cookingDuration"
-          value={formData.cookingDuration}
+          id="cookingTime"
+          name="cookingTime"
+          value={formData.cookingTime}
           onChange={handleChange}
           required
-          min={1}
         />
       </div>
       <div>
-        <label htmlFor="category">Category</label>
+        <label htmlFor="difficulty">Difficulty</label>
         <select
-          id="category"
-          name="category"
-          value={formData.category._id}
+          id="difficulty"
+          name="difficulty"
+          value={formData.difficulty}
           onChange={handleChange}
           required
         >
-          <option value="">Select category</option>
-          {CATEGORIES.map(category => (
-            <option key={category._id} value={category._id}>
-              {category.name}
-            </option>
-          ))}
+          <option value="">Select difficulty</option>
+          <option value="Easy">Easy</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
         </select>
       </div>
       <button type="submit">Submit</button>

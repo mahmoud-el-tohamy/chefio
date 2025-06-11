@@ -13,33 +13,40 @@ interface RecipeCardProps {
 const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
   return (
     <div className={styles.card}>
-      <Link href={`/recipes/${recipe._id}`} className={styles.imageContainer} aria-label={`View details for ${recipe.foodName}`} tabIndex={-1}>
+      <Link href={`/recipes/${recipe.id}`} className={styles.imageContainer} aria-label={`View details for ${recipe.title}`} tabIndex={-1}>
         <Image
-          src={recipe.recipePicture}
-          alt={recipe.foodName}
+          src={recipe.image}
+          alt={`Image of ${recipe.title}`}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className={styles.image}
-          priority={false}
+          priority
         />
       </Link>
       <div className={styles.content}>
-        <Link href={`/recipes/${recipe._id}`} className={styles.title} aria-label={`View details for ${recipe.foodName}`} tabIndex={-1}>
-          {recipe.foodName}
+        <Link href={`/recipes/${recipe.id}`} className={styles.title} aria-label={`View details for ${recipe.title}`} tabIndex={-1}>
+          {recipe.title}
         </Link>
         <div className={styles.footer}>
-          <Link href={`/profile/${recipe.createdBy.username}`} className={styles.author}>
-            <UserAvatar
-              src={recipe.createdBy.profilePicture}
-              alt={`Avatar of ${recipe.createdBy.username}`}
-              size={24}
-              className={styles.avatar}
+          <div className={styles.author}>
+            <Link href={`/profile/${recipe.author.username}`} className={styles.authorProfileLink} aria-label={`View ${recipe.author.name}'s profile`} onClick={e => e.stopPropagation()}>
+              <UserAvatar
+                src={recipe.author.avatar}
+                alt={`Avatar of ${recipe.author.name}`}
+                size={32}
+                className={styles.authorAvatar}
+              />
+              <span className={styles.authorName}>{recipe.author.name}</span>
+            </Link>
+          </div>
+          <div className={styles.time}>
+            <Image
+              src="/icons/time.svg"
+              alt="Cooking time"
+              width={16}
+              height={16}
             />
-            <span className={styles.authorName}>{recipe.createdBy.username}</span>
-          </Link>
-          <div className={styles.stats}>
-            <span className={styles.likes}>{recipe.likes} likes</span>
-            <span className={styles.duration}>{recipe.cookingDuration} mins</span>
+            <span>{recipe.cookingTime}</span>
           </div>
         </div>
       </div>
