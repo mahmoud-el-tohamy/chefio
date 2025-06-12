@@ -14,7 +14,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 function LikeButton({ initialLiked, initialCount, recipeId, isOwner }: { initialLiked: boolean; initialCount: number; recipeId: string; isOwner: boolean }) {
   const [liked, setLiked] = useState(initialLiked);
-  const [count, setCount] = useState(initialCount);
+  const [count, setCount] = useState(initialCount || 0); // Add fallback to 0
 
   const handleLikeClick = async () => {
     const newLikedState = !liked;
@@ -173,7 +173,8 @@ function EditButton({ recipeId, isOwner }: { recipeId: string; isOwner: boolean 
   const router = useRouter();
 
   const handleEditClick = () => {
-    router.push(`/create-recipe?id=${recipeId}`);
+    console.log('Edit button clicked, navigating to:', `/edit-recipe/${recipeId}`);
+    router.push(`/edit-recipe/${recipeId}`);
   };
 
   return (
@@ -240,7 +241,7 @@ function RecipeHeader({ recipe }: { recipe: Recipe }) {
               {recipe.createdBy.username}
             </span>
           </div>
-          <LikeButton initialLiked={recipe.isLiked} initialCount={recipe.likes} recipeId={recipe._id} isOwner={recipe.createdBy._id === Cookies.get('Authorization')} />
+          <LikeButton initialLiked={recipe.isLiked} initialCount={recipe.likesCount || 0} recipeId={recipe._id} isOwner={recipe.createdBy._id === Cookies.get('Authorization')} />
         </div>
         <div className={styles.categoryRow}>
           <span className={styles.category}>{recipe.category.name}</span>
@@ -484,7 +485,7 @@ export default function RecipePage() {
                   </span>
                 </div>
                 <div className={styles.actionButtons}>
-                  <LikeButton initialLiked={recipe.isLiked} initialCount={recipe.likes} recipeId={recipe._id} isOwner={isOwner} />
+                  <LikeButton initialLiked={recipe.isLiked} initialCount={recipe.likesCount || 0} recipeId={recipe._id} isOwner={isOwner} />
                   <DeleteButton recipeId={recipe._id} isOwner={isOwner} />
                   <EditButton recipeId={recipe._id} isOwner={isOwner} />
                 </div>

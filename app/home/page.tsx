@@ -26,7 +26,7 @@ const HomePage = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState("createdAt");
   const [order, setOrder] = useState("desc");
@@ -203,8 +203,7 @@ const HomePage = () => {
   return (
     <>
       <Head>
-        <title>Chefio | Home</title>
-        <meta name="description" content="Discover, share, and save your favorite recipes on Chefio." />
+        <title>Home - Chefio</title>
       </Head>
       <div className={styles.container}>
         <Navbar />
@@ -224,24 +223,21 @@ const HomePage = () => {
               />
             </div>
           </div>
-          
-          {error ? (
-            <div className={styles.error}>{error}</div>
-          ) : (
-            <>
-              <RecipeGrid 
-                recipes={recipes}
-                onToggleLike={handleToggleLike}
-              />
-              
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-                limit={limit}
-                onLimitChange={handleLimitChange}
-              />
-            </>
+
+          <RecipeGrid 
+            recipes={recipes} 
+            onToggleLike={handleToggleLike} 
+            isLoading={isLoading}
+          />
+
+          {!isLoading && recipes.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              onLimitChange={handleLimitChange}
+              limit={limit}
+            />
           )}
         </main>
       </div>

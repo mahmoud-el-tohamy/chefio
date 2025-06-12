@@ -81,5 +81,14 @@ export const recipeService = {
     } catch (error: any) {
       throw new Error(error.response?.data?.message || error.message || 'Failed to fetch recipe');
     }
+  },
+
+  async updateRecipe(id: string, formData: FormData): Promise<RecipeResponse> {
+    try {
+      const response = await api.put(`/recipe/update-recipe/${id}`, formData);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || error.message || 'Failed to update recipe');
+    }
   }
 }; 

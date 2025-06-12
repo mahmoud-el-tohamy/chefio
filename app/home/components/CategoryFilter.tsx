@@ -59,7 +59,7 @@ export default function CategoryFilter({
   // const categories = CATEGORIES; // Remove static categories
 
   if (loading) {
-    return <div className="category-filter">Loading categories...</div>;
+    return <div className="category-filter"></div>;
   }
 
   if (error) {

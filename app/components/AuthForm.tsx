@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,12 +9,156 @@ import styles from "../styles/auth.module.css";
 import { AuthFormProps, FormValues } from "@/types/auth";
 import { authService } from "@/services/auth";
 
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: any) => void;
+          renderButton: (element: HTMLElement, config: any) => void;
+          prompt: () => void;
+        };
+      };
+    };
+  }
+}
+
+const GOOGLE_CLIENT_ID = "652192691165-mbp1aa6qi6l9bnou7ltg3vd6uq7icdrn.apps.googleusercontent.com";
+
 const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   const router = useRouter();
   const isLogin = type === "login";
   const [showPassword, setShowPassword] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState<string>("");
+
+  // Ref to store the actual clickable Google button element (rendered by Google API)
+  const googleActualButtonRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const initializeGoogleSignIn = () => {
+      try {
+        console.log('Initializing Google Sign-In...');
+        if (!window.google) {
+          console.error('Google Sign-In script not loaded');
+          setError('Google Sign-In is not available. Please try again later.');
+          return;
+        }
+
+        window.google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleSignIn,
+          auto_select: false,
+          cancel_on_tap_outside: true,
+          context: 'signin',
+          ux_mode: 'popup',
+          flow: 'implicit'
+        });
+
+        console.log('Google Sign-In initialized, rendering hidden button...');
+        const buttonElement = document.getElementById('googleSignInButton'); // This is the div for the hidden button
+        if (!buttonElement) {
+          console.error('Google Sign-In button element not found for rendering.');
+          setError('Failed to set up Google Sign-In button. Please refresh the page.');
+          return;
+        }
+
+        // Render the actual Google button into the now hidden div
+        window.google.accounts.id.renderButton(
+          buttonElement,
+          {
+            type: 'standard',
+            theme: 'outline', // Theme doesn't matter for a hidden button
+            size: 'large',
+            width: '100%',
+            text: 'signin_with',
+            shape: 'rectangular',
+          }
+        );
+
+        // Use MutationObserver to find the actual clickable element within the rendered button
+        // This is necessary because the Google button is rendered within an iframe/shadow DOM.
+        const observer = new MutationObserver((mutationsList) => {
+          for (const mutation of mutationsList) {
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+              const actualGoogleButton = buttonElement.querySelector('div[role="button"]'); // Look for the clickable element
+              if (actualGoogleButton) {
+                googleActualButtonRef.current = actualGoogleButton as HTMLElement;
+                console.log('Actual Google button element found and referenced.');
+                observer.disconnect(); // Stop observing once found
+                break;
+              }
+            }
+          }
+        });
+        observer.observe(buttonElement, { childList: true, subtree: true });
+
+        console.log('Google Sign-In hidden button rendered.');
+      } catch (error) {
+        console.error('Error initializing Google Sign-In:', error);
+        setError('Failed to initialize Google Sign-In. Please refresh the page and try again.');
+      }
+    };
+
+    initializeGoogleSignIn();
+    // No need for setTimeout if MutationObserver is reliable, but keeping it for robustness
+    const timer = setTimeout(initializeGoogleSignIn, 1000);
+
+    return () => clearTimeout(timer); // Clean up timeout
+  }, []);
+
+  // Function to handle click on our custom button
+  const handleCustomGoogleButtonClick = () => {
+    if (googleActualButtonRef.current) {
+      console.log('Triggering click on hidden Google Sign-In button.');
+      googleActualButtonRef.current.click(); // Programmatically click the hidden Google button
+    } else {
+      setError('Google Sign-In service not fully loaded. Please try again.');
+      console.error('Cannot find reference to Google Sign-In button.');
+    }
+  };
+
+  const handleGoogleSignIn = async (response: any) => {
+    try {
+      setFormLoading(true);
+      setError("");
+      console.log('Full Google Sign-In response:', response);
+      
+      if (!response.credential) {
+        console.error('No credential received from Google');
+        setError('Failed to get credentials from Google. Please try again.');
+        return;
+      }
+
+      // The credential from Google is the ID token
+      const idToken = response.credential;
+      console.log('ID token from Google:', idToken);
+      
+      // Ensure the token is properly formatted
+      if (!idToken || typeof idToken !== 'string' || idToken.trim() === '') {
+        console.error('Invalid ID token received from Google');
+        setError('Failed to get valid credentials from Google. Please try again.');
+        return;
+      }
+
+      console.log('Sending ID token to backend...');
+      const result = await authService.googleSignIn(idToken);
+      console.log('Backend response:', result);
+
+      if (result.accessToken) {
+        console.log('Sign-in successful, redirecting...');
+        router.push('/home');
+      } else {
+        console.error('No access token in response');
+        setError('Failed to sign in. Please try again.');
+      }
+    } catch (error: any) {
+      console.error('Google Sign-In error:', error);
+      setError(error.message || 'Failed to sign in with Google. Please try again.');
+    } finally {
+      setFormLoading(false);
+    }
+  };
 
   // react-hook-form
   const {
@@ -270,9 +414,27 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
         <p className={styles.or}>Or continue with</p>
 
-        <button type="button" className={styles.googleButton} aria-label="Sign in with Google">
-          Google
+        {/* Custom Google Sign-In Button */}
+        <button
+          type="button" // Use type="button" to prevent form submission
+          className={styles.googleButton} // Apply your desired styles here
+          onClick={handleCustomGoogleButtonClick}
+          disabled={formLoading}
+          aria-label="Sign in with Google"
+        >
+          <Image
+            src="/icons/google.svg" // Path to your Google icon
+            alt="Google Logo"
+            width={20}
+            height={20}
+            className={styles.googleIcon} // Optional: for specific icon styling
+          />
+          Sign in with Google
         </button>
+
+        {/* Hidden div for Google Identity Services to render its actual button */}
+        {/* This div must be present for the Google API to render the button internally */}
+        <div id="googleSignInButton" style={{ display: 'none' }}></div>
 
         {/* Link to navigate between Login and Sign Up */}
         <p className={styles.switchAuth}>

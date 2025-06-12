@@ -1,5 +1,6 @@
 import { SignupResponse, SignupRequest, SigninRequest, SigninResponse } from '@/types/auth';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const API_BASE_URL = 'https://chefio-beta.vercel.app/api/v1';
 
@@ -70,6 +71,57 @@ export const authService = {
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || error.message || 'Failed to sign up');
+    }
+  },
+
+  async googleSignIn(idToken: string) {
+    try {
+      console.log('Full ID token:', idToken);
+      
+      const response = await fetch(`${API_BASE_URL}/auth/google-signin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain",
+          "Accept": "application/json"
+        },
+        body: idToken,  // Send the raw token
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      
+      // Check if response is JSON
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const responseText = await response.text();
+        console.error('Received non-JSON response:', responseText);
+        throw new Error('Server returned an invalid response. Please try again.');
+      }
+
+      const data = await response.json();
+      console.log('Response data:', data);
+
+      if (!response.ok) {
+        if (data.message === "IdToken is required") {
+          console.error('Server did not receive the token properly');
+          throw new Error('Failed to send authentication token. Please try again.');
+        }
+        throw new Error(data.message || `Sign in failed: ${response.status} ${response.statusText}`);
+      }
+
+      if (data.accessToken) {
+        // Store the token in cookies
+        Cookies.set("accessToken", data.accessToken, {
+          expires: 15 / (24 * 60), // 15 minutes
+          path: "/",
+        });
+        return data;
+      } else {
+        throw new Error("No access token received from server");
+      }
+    } catch (error: any) {
+      console.error("Google sign-in error:", error);
+      throw new Error(error.message || "Failed to sign in with Google");
     }
   },
 

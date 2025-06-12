@@ -6,13 +6,23 @@ import styles from '@/styles/RecipeGrid.module.css';
 import { Recipe } from "@/types";
 import Link from 'next/link';
 import UserAvatar from '@/components/common/UserAvatar';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 interface RecipeGridProps {
   recipes: Recipe[];
   onToggleLike: (recipeId: string) => void;
+  isLoading?: boolean;
 }
 
-const RecipeGrid: React.FC<RecipeGridProps> = ({ recipes, onToggleLike }) => {
+const RecipeGrid: React.FC<RecipeGridProps> = ({ recipes, onToggleLike, isLoading = false }) => {
+  if (isLoading) {
+    return (
+      <div className={styles.grid}>
+        <LoadingSpinner message="Loading recipes..." />
+      </div>
+    );
+  }
+
   if (!recipes || recipes.length === 0) {
     return (
       <div className={styles.grid}>

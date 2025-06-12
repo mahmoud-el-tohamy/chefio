@@ -74,9 +74,6 @@ export default function Step1({ onNext, onCancel, initialData }: Step1Props) {
   const validateStep1 = () => {
     const newErrors: { [key: string]: string } = {};
     
-    if (!coverPhoto && !initialData.recipePicture) {
-      newErrors.recipePicture = 'Please add a cover photo';
-    }
     if (!foodName.trim()) {
       newErrors.foodName = 'Please enter a food name';
     }
@@ -202,13 +199,13 @@ export default function Step1({ onNext, onCancel, initialData }: Step1Props) {
             ))}
           </select>
           {errors.category && <div className={styles.errorText}>{errors.category}</div>}
-          {error && <div className={styles.errorText}>{error}</div>}
         </div>
-        <div className={styles.formCol}></div>
       </div>
 
       <div className={styles.buttonRow}>
-        <button className={styles.nextBtn} onClick={handleNextClick}>Next</button>
+        <button className={styles.nextBtn} onClick={handleNextClick}>
+          Next
+        </button>
       </div>
     </div>
   );
