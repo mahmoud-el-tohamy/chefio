@@ -21,6 +21,47 @@ export const getAccessToken = () => {
   return decodeURIComponent(authCookie.split('=')[1].trim().replace(/^Bearer /, ''));
 };
 
+// Helper function to get refresh token
+export const getRefreshToken = () => {
+  const cookies = document.cookie.split(';');
+  const refreshCookie = cookies.find(cookie => cookie.trim().startsWith('refreshToken='));
+  if (!refreshCookie) return null;
+  return decodeURIComponent(refreshCookie.split('=')[1].trim());
+};
+
+// Function to proactively refresh the token
+const proactiveRefreshToken = async () => {
+  const accessToken = getAccessToken();
+  const refreshToken = getRefreshToken();
+
+  if (accessToken && refreshToken) {
+    try {
+      const response = await api.post('/auth/refresh-token', { refreshToken });
+      const { accessToken: newAccessToken } = response.data;
+
+      // Update tokens in cookies
+      const rawToken = newAccessToken.replace(/^Bearer /, '');
+      document.cookie = `accessToken=${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
+      document.cookie = `Authorization=Bearer ${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
+      
+      if (response.data.refreshToken) {
+        document.cookie = `refreshToken=${response.data.refreshToken}; path=/; max-age=604800; Secure; SameSite=Strict`;
+      }
+      console.log('Access token proactively refreshed.');
+    } catch (error) {
+      console.error('Proactive token refresh failed:', error);
+      // If proactive refresh fails, log out the user
+      document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'Authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      window.location.href = '/auth/login';
+    }
+  }
+};
+
+// Set up interval for proactive refresh (every 10 minutes)
+setInterval(proactiveRefreshToken, 10 * 60 * 1000); 
+
 // Add request interceptor to add token to all requests
 api.interceptors.request.use((config) => {
   const token = getAccessToken();
@@ -35,15 +76,81 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Flag to prevent multiple refresh attempts
+let isRefreshing = false;
+// Store pending requests
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 // Add response interceptor to handle token expiration
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
-      // Clear the token and redirect to login
-      document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-      document.cookie = 'Authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-      window.location.href = '/auth/login';
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        // If refresh is in progress, add request to queue
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(token => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch(err => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const refreshToken = getRefreshToken();
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
+        }
+
+        const response = await api.post('/auth/refresh-token', { refreshToken });
+        const { accessToken } = response.data;
+
+        // Update tokens in cookies
+        const rawToken = accessToken.replace(/^Bearer /, '');
+        document.cookie = `accessToken=${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
+        document.cookie = `Authorization=Bearer ${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
+        
+        // Store refresh token if provided
+        if (response.data.refreshToken) {
+          document.cookie = `refreshToken=${response.data.refreshToken}; path=/; max-age=604800; Secure; SameSite=Strict`;
+        }
+
+        // Update Authorization header
+        originalRequest.headers.Authorization = `Bearer ${rawToken}`;
+        
+        // Process queued requests
+        processQueue(null, rawToken);
+        
+        return api(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        // Clear tokens and redirect to login
+        document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        document.cookie = 'Authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        window.location.href = '/auth/login';
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
     return Promise.reject(error);
   }
@@ -58,6 +165,11 @@ export const authService = {
         const rawToken = response.data.accessToken.replace(/^Bearer /, '');
         document.cookie = `accessToken=${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
         document.cookie = `Authorization=Bearer ${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
+        
+        // Store refresh token if provided
+        if (response.data.refreshToken) {
+          document.cookie = `refreshToken=${response.data.refreshToken}; path=/; max-age=604800; Secure; SameSite=Strict`;
+        }
       }
       return response.data;
     } catch (error: any) {
@@ -173,6 +285,7 @@ export const authService = {
   logout() {
     document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     document.cookie = 'Authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     window.location.href = '/auth/login';
   }
 }; 

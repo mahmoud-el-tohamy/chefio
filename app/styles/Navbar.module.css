@@ -41,6 +41,7 @@
   height: 40px;
   border-radius: 8px;
   transition: background-color 0.2s;
+  color: #2E3E5C;
 }
 
 .navLink:hover {

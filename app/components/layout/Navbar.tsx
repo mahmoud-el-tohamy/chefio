@@ -7,10 +7,11 @@ import styles from "@/styles/Navbar.module.css";
 import NotificationsDropdown from "../notifications/NotificationsDropdown";
 import { GroupedNotifications } from "@/types/notification";
 import { currentUser } from '@/constants/currentUser';
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import HomeIcon from "@/components/icons/HomeIcon";
 import ProfileIcon from "@/components/icons/ProfileIcon";
 import MenuIcon from "@/components/icons/MenuIcon";
+import SignOutIcon from "@/components/icons/SignOutIcon";
 import { createPortal } from "react-dom";
 import Cookies from "js-cookie";
 
@@ -25,6 +26,7 @@ function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const [userId, setUserId] = useState<string>("");
 
   const fetchNotifications = async () => {
@@ -90,6 +92,27 @@ function Navbar() {
     // If opening notifications and there are unread notifications, mark them as read
     if (newIsOpen && notifications.new.length > 0) {
       markNotificationsAsRead();
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      const token = Cookies.get('Authorization');
+      if (token) {
+        await fetch('https://chefio-beta.vercel.app/api/v1/auth/signout', {
+          method: 'POST',
+          headers: {
+            'Authorization': token,
+            'Content-Type': 'application/json' // Assuming the endpoint might expect JSON, though body is empty
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Error during sign out:', error);
+    } finally {
+      // Always remove cookie and redirect, even if API call fails client-side
+      Cookies.remove('Authorization');
+      router.push('/auth/login');
     }
   };
 
@@ -161,6 +184,13 @@ function Navbar() {
             </span>
           )}
         </button>
+        <button
+          className={styles.navLink}
+          onClick={handleSignOut}
+          aria-label="Sign out"
+        >
+          <SignOutIcon />
+        </button>
       </div>
 
       {/* Mobile Menu */}
@@ -215,6 +245,16 @@ function Navbar() {
                 {notifications.new.length}
               </span>
             )}
+          </button>
+          <button
+            className={styles.mobileNavLink}
+            onClick={() => {
+              handleSignOut();
+              setMobileMenuOpen(false);
+            }}
+          >
+            <SignOutIcon />
+            Sign Out
           </button>
         </div>,
         document.body
