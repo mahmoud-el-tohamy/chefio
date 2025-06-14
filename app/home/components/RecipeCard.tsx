@@ -13,10 +13,10 @@ interface RecipeCardProps {
 const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
   return (
     <div className={styles.card}>
-      <Link href={`/recipes/${recipe.id}`} className={styles.imageContainer} aria-label={`View details for ${recipe.title}`} tabIndex={-1}>
+      <Link href={`/recipes/${recipe._id}`} className={styles.imageContainer} aria-label={`View details for ${recipe.foodName}`} tabIndex={-1}>
         <Image
-          src={recipe.image}
-          alt={`Image of ${recipe.title}`}
+          src={recipe.recipePicture}
+          alt={`Image of ${recipe.foodName}`}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className={styles.image}
@@ -24,19 +24,19 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
         />
       </Link>
       <div className={styles.content}>
-        <Link href={`/recipes/${recipe.id}`} className={styles.title} aria-label={`View details for ${recipe.title}`} tabIndex={-1}>
-          {recipe.title}
+        <Link href={`/recipes/${recipe._id}`} className={styles.title} aria-label={`View details for ${recipe.foodName}`} tabIndex={-1}>
+          {recipe.foodName}
         </Link>
         <div className={styles.footer}>
           <div className={styles.author}>
-            <Link href={`/profile/${recipe.author.username}`} className={styles.authorProfileLink} aria-label={`View ${recipe.author.name}'s profile`} onClick={e => e.stopPropagation()}>
+            <Link href={`/profile/${recipe.createdBy.username}`} className={styles.authorProfileLink} aria-label={`View ${recipe.createdBy.username}'s profile`} onClick={e => e.stopPropagation()}>
               <UserAvatar
-                src={recipe.author.avatar}
-                alt={`Avatar of ${recipe.author.name}`}
+                src={recipe.createdBy.profilePicture}
+                alt={`Avatar of ${recipe.createdBy.username}`}
                 size={32}
                 className={styles.authorAvatar}
               />
-              <span className={styles.authorName}>{recipe.author.name}</span>
+              <span className={styles.authorName}>{recipe.createdBy.username}</span>
             </Link>
           </div>
           <div className={styles.time}>
@@ -46,7 +46,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
               width={16}
               height={16}
             />
-            <span>{recipe.cookingTime}</span>
+            <span>{recipe.cookingDuration}</span>
           </div>
         </div>
       </div>
