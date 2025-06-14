@@ -53,8 +53,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
           <div key={recipe._id} className={styles.recipeCard}>
             <div className={styles.imageContainer}>
               <Image
-                src={recipe.imageUrl}
-                alt={recipe.title}
+                src={recipe.recipePicture}
+                alt={recipe.foodName}
                 width={200}
                 height={150}
                 className={styles.recipeImage}
@@ -62,7 +62,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
               <button 
                 className={`${styles.favoriteButton} ${recipe.isLiked ? styles.liked : ''}`}
                 onClick={() => onToggleLike(recipe._id)}
-                aria-label={recipe.isLiked ? `Remove ${recipe.title} from favorites` : `Add ${recipe.title} to favorites`}
+                aria-label={recipe.isLiked ? `Remove ${recipe.foodName} from favorites` : `Add ${recipe.foodName} to favorites`}
               >
                 <Image
                   src={recipe.isLiked ? "/icons/heart-filled.svg" : "/icons/heart.svg"}
@@ -84,7 +84,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             </div>
 
             <div className={styles.recipeInfo}>
-              <h3 className={styles.recipeTitle}>{recipe.title}</h3>
+              <h3 className={styles.recipeTitle}>{recipe.foodName}</h3>
               <p className={styles.recipeDescription}>{recipe.description}</p>
               <div className={styles.recipeMeta}>
                 <span className={styles.category}>{recipe.category}</span>
