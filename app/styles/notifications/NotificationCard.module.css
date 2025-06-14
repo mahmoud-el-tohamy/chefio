@@ -13,6 +13,11 @@
   background-color: #f8f9fa;
 }
 
+.card:active {
+  background-color: #e0e0e0; /* A darker shade when clicked */
+  transform: scale(0.99); /* Slightly shrink the card */
+}
+
 .userImages {
   display: flex;
   position: relative;

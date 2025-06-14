@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { GroupedNotifications } from '@/types/notification';
+import { GroupedNotifications, Notification } from '@/types/notification';
 import NotificationCard from './NotificationCard';
 import styles from '@/styles/notifications/NotificationsDropdown.module.css';
 
@@ -7,12 +7,16 @@ interface NotificationsDropdownProps {
   isOpen: boolean;
   onClose: () => void;
   notifications: GroupedNotifications;
+  onMarkAllAsRead?: () => void;
+  onNotificationActionComplete?: () => void;
 }
 
 const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
   isOpen,
   onClose,
-  notifications
+  notifications,
+  onMarkAllAsRead,
+  onNotificationActionComplete
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -34,7 +38,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
 
   if (!isOpen) return null;
 
-  const renderSection = (title: string, items: any[]) => {
+  const renderSection = (title: string, items: Notification[]) => {
     if (items.length === 0) return null;
 
     return (
@@ -45,6 +49,8 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
             <NotificationCard
               key={notification.id}
               notification={notification}
+              onCloseDropdown={onClose}
+              onNotificationActionComplete={onNotificationActionComplete}
             />
           ))}
         </div>
@@ -52,11 +58,28 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
     );
   };
 
+  const hasUnreadNotifications = notifications.new.length > 0;
+
   return (
     <div className={styles.dropdownOverlay}>
       <div ref={dropdownRef} className={styles.dropdown}>
         <div className={styles.header}>
           <h2 className={styles.title}>Notifications</h2>
+          {hasUnreadNotifications && onMarkAllAsRead && (
+            <button
+              className={styles.markAllReadButton}
+              onClick={() => {
+                onMarkAllAsRead();
+                onClose();
+                if (onNotificationActionComplete) {
+                  onNotificationActionComplete();
+                }
+              }}
+              aria-label="Mark all notifications as read"
+            >
+              Mark all as read
+            </button>
+          )}
         </div>
         <div className={styles.content}>
           {renderSection('New', notifications.new)}

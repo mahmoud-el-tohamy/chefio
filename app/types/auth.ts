@@ -26,6 +26,7 @@ export interface SigninRequest {
 export interface SigninResponse {
   success: boolean;
   accessToken: string;
+  refreshToken?: string;
   message: string;
 }
 

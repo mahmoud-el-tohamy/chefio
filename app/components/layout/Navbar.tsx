@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "@/styles/Navbar.module.css";
 import NotificationsDropdown from "../notifications/NotificationsDropdown";
-import { GroupedNotifications } from "@/types/notification";
-import { currentUser } from '@/constants/currentUser';
+import { GroupedNotifications, type Notification } from "@/types/notification";
 import { usePathname, useRouter } from "next/navigation";
 import HomeIcon from "@/components/icons/HomeIcon";
 import ProfileIcon from "@/components/icons/ProfileIcon";
@@ -14,6 +13,7 @@ import MenuIcon from "@/components/icons/MenuIcon";
 import SignOutIcon from "@/components/icons/SignOutIcon";
 import { createPortal } from "react-dom";
 import Cookies from "js-cookie";
+import { notificationService } from "@/services/notification";
 
 function Navbar() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -29,31 +29,85 @@ function Navbar() {
   const router = useRouter();
   const [userId, setUserId] = useState<string>("");
 
+  const unreadNotificationsCount = useMemo(() => {
+    let count = 0;
+    Object.values(notifications).forEach(group => {
+      group.forEach((notification: Notification) => {
+        if (!notification.isRead) {
+          count++;
+        }
+      });
+    });
+    return count;
+  }, [notifications]);
+
   const fetchNotifications = async () => {
     try {
-      const response = await fetch('/api/notifications');
-      const data = await response.json();
-      setNotifications(data);
+      const response = await notificationService.getNotifications();
+      if (response.success && response.notifications.notifications) {
+        const groupedNotifications = notificationService.groupNotificationsByTime(
+          response.notifications.notifications
+        );
+        setNotifications(groupedNotifications);
+      }
     } catch (error) {
       console.error('Error fetching notifications:', error);
     }
   };
 
   const markNotificationsAsRead = async () => {
+    // If there are no unread notifications, skip the API call
+    if (unreadNotificationsCount === 0) {
+      console.log('[markNotificationsAsRead] No unread notifications to mark as read. Skipping API call.');
+      // Re-fetch notifications to ensure the state is truly synced if there was a discrepancy
+      fetchNotifications();
+      return;
+    }
+
     try {
-      const response = await fetch('/api/notifications', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ markAllAsRead: true }),
-      });
-      const data = await response.json();
-      setNotifications(data);
-    } catch (error) {
-      console.error('Error marking notifications as read:', error);
+      console.log('[markNotificationsAsRead] Making API call to mark notifications as read.');
+      const response = await notificationService.markNotificationsAsRead();
+      if (response.success) {
+        // Re-fetch notifications to update the UI with the read status
+        fetchNotifications();
+      }
+    } catch (error: any) {
+      console.error('[markNotificationsAsRead] Error marking notifications as read:', error);
+      // If the error indicates notifications were not found, assume success and re-fetch
+      if (error.message && (error.message.includes('404') || error.message.includes('not found notification'))) {
+        console.warn('[markNotificationsAsRead] Received "not found notification" or 404 for mark-all-as-read, assuming success and re-fetching notifications.');
+        fetchNotifications();
+      }
     }
   };
+
+  // Register FCM token when component mounts
+  useEffect(() => {
+    const registerFCMToken = async () => {
+      try {
+        // Check if the browser supports service workers and notifications
+        if ('serviceWorker' in navigator && 'Notification' in window) {
+          // Request notification permission
+          const permission = await Notification.requestPermission();
+          if (permission === 'granted') {
+            // Get FCM token from service worker
+            const registration = await navigator.serviceWorker.ready;
+            const subscription = await registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+            });
+            
+            // Register token with backend
+            await notificationService.registerFCMToken(JSON.stringify(subscription));
+          }
+        }
+      } catch (error) {
+        console.error('Error registering FCM token:', error);
+      }
+    };
+
+    registerFCMToken();
+  }, []);
 
   useEffect(() => {
     // Fetch notifications on component mount
@@ -89,8 +143,10 @@ function Navbar() {
     const newIsOpen = !isNotificationsOpen;
     setIsNotificationsOpen(newIsOpen);
 
+    console.log(`[handleNotificationsToggle] newIsOpen: ${newIsOpen}, unreadNotificationsCount: ${unreadNotificationsCount}`);
+
     // If opening notifications and there are unread notifications, mark them as read
-    if (newIsOpen && notifications.new.length > 0) {
+    if (newIsOpen && unreadNotificationsCount > 0) {
       markNotificationsAsRead();
     }
   };
@@ -171,16 +227,16 @@ function Navbar() {
         <button
           className={styles.notificationButton}
           onClick={handleNotificationsToggle}
-          aria-label={`Notifications ${notifications.new.length > 0 ? `(${notifications.new.length} new)` : ''}`}
+          aria-label={`Notifications ${unreadNotificationsCount > 0 ? `(${unreadNotificationsCount} new)` : ''}`}
         >
           <Image
             src="/icons/notification.svg"
             alt="Notifications"
             width={24}
             height={24} />
-          {notifications.new.length > 0 && (
+          {unreadNotificationsCount > 0 && (
             <span className={styles.notificationBadge}>
-              {notifications.new.length}
+              {unreadNotificationsCount}
             </span>
           )}
         </button>
@@ -232,7 +288,7 @@ function Navbar() {
               handleNotificationsToggle();
               setMobileMenuOpen(false);
             }}
-            aria-label={`Notifications ${notifications.new.length > 0 ? `(${notifications.new.length} new)` : ''}`}
+            aria-label={`Notifications ${unreadNotificationsCount > 0 ? `(${unreadNotificationsCount} new)` : ''}`}
           >
             <Image
               src="/icons/notification.svg"
@@ -240,9 +296,9 @@ function Navbar() {
               width={24}
               height={24} />
             Notifications
-            {notifications.new.length > 0 && (
+            {unreadNotificationsCount > 0 && (
               <span className={styles.notificationBadge}>
-                {notifications.new.length}
+                {unreadNotificationsCount}
               </span>
             )}
           </button>
@@ -263,7 +319,8 @@ function Navbar() {
       <NotificationsDropdown
         isOpen={isNotificationsOpen}
         onClose={() => setIsNotificationsOpen(false)}
-        notifications={notifications} />
+        notifications={notifications}
+        onMarkAllAsRead={markNotificationsAsRead} />
     </nav>
   );
 }

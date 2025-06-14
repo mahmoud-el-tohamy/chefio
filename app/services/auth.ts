@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 const API_BASE_URL = 'https://chefio-beta.vercel.app/api/v1';
 
 // Create axios instance with default config
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
@@ -59,8 +59,8 @@ const proactiveRefreshToken = async () => {
   }
 };
 
-// Set up interval for proactive refresh (every 10 minutes)
-setInterval(proactiveRefreshToken, 10 * 60 * 1000); 
+// Set up interval for proactive refresh (every 7 minutes)
+setInterval(proactiveRefreshToken, 7 * 60 * 1000); 
 
 // Add request interceptor to add token to all requests
 api.interceptors.request.use((config) => {
@@ -189,14 +189,30 @@ export const authService = {
   async googleSignIn(idToken: string) {
     try {
       console.log('Full ID token:', idToken);
-      
+
+      // Decode the ID token to get user information
+      const parts = idToken.split('.');
+      if (parts.length !== 3) {
+        throw new Error('Invalid ID token format');
+      }
+      const decodedPayload = JSON.parse(atob(parts[1]));
+      console.log('Decoded ID token payload:', decodedPayload);
+
+      const requestBody = {
+        googleId: decodedPayload.sub, // Google user ID
+        email: decodedPayload.email,
+        username: decodedPayload.name || decodedPayload.given_name, // Use name or given_name
+        profilePicture: decodedPayload.picture,
+        verified: decodedPayload.email_verified || true, // Use email_verified if available, otherwise true
+      };
+
       const response = await fetch(`${API_BASE_URL}/auth/google-signin`, {
         method: "POST",
         headers: {
-          "Content-Type": "text/plain",
+          "Content-Type": "application/json", // Change to application/json
           "Accept": "application/json"
         },
-        body: idToken,  // Send the raw token
+        body: JSON.stringify(requestBody), // Send the JSON body
       });
 
       console.log('Response status:', response.status);
@@ -222,11 +238,10 @@ export const authService = {
       }
 
       if (data.accessToken) {
-        // Store the token in cookies
-        Cookies.set("accessToken", data.accessToken, {
-          expires: 15 / (24 * 60), // 15 minutes
-          path: "/",
-        });
+        // Store the access token in both cookies with 15 minutes expiration
+        const rawToken = data.accessToken.replace(/^Bearer /, '');
+        document.cookie = `accessToken=${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
+        document.cookie = `Authorization=Bearer ${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
         return data;
       } else {
         throw new Error("No access token received from server");
