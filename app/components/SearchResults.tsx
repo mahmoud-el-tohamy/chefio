@@ -87,7 +87,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
               <h3 className={styles.recipeTitle}>{recipe.foodName}</h3>
               <p className={styles.recipeDescription}>{recipe.description}</p>
               <div className={styles.recipeMeta}>
-                <span className={styles.category}>{recipe.category}</span>
+                <span className={styles.category}>{recipe.category.name}</span>
                 <span className={styles.duration}>{recipe.cookingDuration} mins</span>
               </div>
             </div>
