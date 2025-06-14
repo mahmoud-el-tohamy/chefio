@@ -16,23 +16,27 @@ export interface User {
 }
 
 export interface Recipe {
+  likesCount: number;
   _id: string;
-  title: string;
-  description: string;
-  ingredients: string[];
-  instructions: string[];
-  cookingDuration: number;
-  category: string;
-  imageUrl: string;
-  createdAt: string;
-  updatedAt: string;
-  likes: number;
-  isLiked?: boolean;
   createdBy: {
     _id: string;
     username: string;
     profilePicture: string;
   };
+  recipePicture: string;
+  foodName: string;
+  description: string;
+  cookingDuration: number;
+  ingredients: string[];
+  steps: string[];
+  category: {
+    _id: string;
+    name: string;
+  };
+  likes: number;
+  createdAt: string;
+  updatedAt: string;
+  isLiked: boolean;
 }
 
 export interface RecipeResponse {
