@@ -1,3 +1,3 @@
-// export const currentUser = {
-//   username: 'mahmoud_eltohamy',
-// };
+export const currentUser = {
+  username: 'mahmoud_eltohamy',
+};
