@@ -6,7 +6,10 @@ import styles from "./RecipePage.module.css";
 import Link from "next/link";
 import { recipeService, Recipe } from "@/services/recipe";
 import { useParams, useRouter } from "next/navigation";
-import axios from "axios";
+import { apiClient } from '@/services/apiClient';
+import { getAccessToken } from '@/services/auth';
+import ImageWithFallback from '@/components/common/ImageWithFallback';
+import axios from 'axios';
 import Cookies from 'js-cookie';
 import UserAvatar from "@/components/common/UserAvatar";
 import Head from 'next/head';
@@ -22,7 +25,7 @@ function LikeButton({ initialLiked, initialCount, recipeId, isOwner }: { initial
     setCount(newLikedState ? count + 1 : count - 1); // Optimistic update
 
     try {
-      let token = Cookies.get('Authorization');
+      let token = Cookies.get('accessToken') || Cookies.get('Authorization');
       if (!token) {
         alert("You need to be logged in to like recipes.");
         setLiked(!newLikedState); // Revert optimistic update
@@ -35,14 +38,9 @@ function LikeButton({ initialLiked, initialCount, recipeId, isOwner }: { initial
         token = token.substring('Bearer '.length);
       }
 
-      const response = await axios.post(
-        `https://chefio-beta.vercel.app/api/v1/recipe/likes/${recipeId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Use token from cookie after removing extra Bearer
-          },
-        }
+      const response = await apiClient.post(
+        `/recipe/likes/${recipeId}`,
+        {}
       );
 
       if (response.data.success) {
@@ -97,7 +95,7 @@ function DeleteButton({ recipeId, isOwner }: { recipeId: string; isOwner: boolea
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      let token = Cookies.get('Authorization');
+      let token = Cookies.get('accessToken') || Cookies.get('Authorization');
       if (!token) {
         alert("You need to be logged in to delete recipes.");
         return;
@@ -107,13 +105,8 @@ function DeleteButton({ recipeId, isOwner }: { recipeId: string; isOwner: boolea
         token = token.substring('Bearer '.length);
       }
 
-      const response = await axios.delete(
-        `https://chefio-beta.vercel.app/api/v1/recipe/delete-recipe/${recipeId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.delete(
+        `/recipe/delete-recipe/${recipeId}`
       );
 
       if (response.data.success) {
@@ -194,7 +187,7 @@ function EditButton({ recipeId, isOwner }: { recipeId: string; isOwner: boolean 
   );
 }
 
-function RecipeHeader({ recipe }: { recipe: Recipe }) {
+function RecipeHeader({ recipe, isOwner }: { recipe: Recipe, isOwner: boolean }) {
   const router = useRouter();
 
   const handleProfileClick = async (e: React.MouseEvent) => {
@@ -213,7 +206,7 @@ function RecipeHeader({ recipe }: { recipe: Recipe }) {
   return (
     <div className={styles.header}>
       <div className={styles.imageWrapper}>
-        <Image src={recipe.recipePicture} alt={recipe.foodName} width={300} height={300} className={styles.recipeImage} />
+        <ImageWithFallback fallbackSrc="/images/recipe-placeholder.svg" src={recipe.recipePicture} alt={recipe.foodName} width={300} height={300} className={styles.recipeImage} />
       </div>
       <div className={styles.meta}>
         <div className={styles.authorRow}>
@@ -241,7 +234,7 @@ function RecipeHeader({ recipe }: { recipe: Recipe }) {
               {recipe.createdBy.username}
             </span>
           </div>
-          <LikeButton initialLiked={recipe.isLiked} initialCount={recipe.likesCount || 0} recipeId={recipe._id} isOwner={recipe.createdBy._id === Cookies.get('Authorization')} />
+          <LikeButton initialLiked={recipe.isLiked} initialCount={recipe.likesCount || 0} recipeId={recipe._id} isOwner={isOwner} />
         </div>
         <div className={styles.categoryRow}>
           <span className={styles.category}>{recipe.category.name}</span>
@@ -308,7 +301,7 @@ export default function RecipePage() {
         console.log('Recipe data set:', response.recipe);
         
         // Get the token and decode it to get user ID
-        const token = Cookies.get('Authorization');
+        const token = Cookies.get('accessToken') || Cookies.get('Authorization');
         if (token) {
           try {
             // Remove 'Bearer ' prefix if it exists
@@ -407,7 +400,7 @@ export default function RecipePage() {
     console.log('Using creator ID:', creatorId);
     
     try {
-      let token = Cookies.get('Authorization');
+      let token = Cookies.get('accessToken') || Cookies.get('Authorization');
       if (!token) {
         console.error('No authorization token found');
         return;
@@ -419,13 +412,8 @@ export default function RecipePage() {
       }
 
       console.log('Fetching profile for ID:', creatorId);
-      const response = await axios.get(
-        `https://chefio-beta.vercel.app/api/v1/user/get-profile/${creatorId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.get(
+        `/user/get-profile/${creatorId}`
       );
 
       console.log('Profile response:', response.data);
@@ -456,7 +444,7 @@ export default function RecipePage() {
               {recipe.foodName}
             </div>
             <div className={styles.coverImageWrapper}>
-              <Image src={recipe.recipePicture} alt={recipe.foodName} width={250} height={250} className={styles.coverImage} />
+              <ImageWithFallback fallbackSrc="/images/recipe-placeholder.svg" src={recipe.recipePicture} alt={recipe.foodName} width={250} height={250} className={styles.coverImage} />
             </div>
             <div className={styles.infoColumn}>
               <div className={styles.authorLikeRow}>

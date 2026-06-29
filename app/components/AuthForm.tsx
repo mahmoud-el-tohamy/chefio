@@ -210,7 +210,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
         if (response.success) {
           // Store user data in localStorage
-          localStorage.setItem('user', JSON.stringify(response.result));
+          const userData = response.newUser || response.result || { email: data.email };
+          localStorage.setItem('user', JSON.stringify(userData));
           
           // Send verification code
           await authService.sendVerificationCode(data.email);

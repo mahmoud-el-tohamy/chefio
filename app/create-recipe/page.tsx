@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Step1 from '@/components/create-recipe/Step1';
 import Step2 from '@/components/create-recipe/Step2';
 import SuccessModal from '@/components/create-recipe/SuccessModal';
-import axios from 'axios';
+import { apiClient } from '@/services/apiClient';
 import { getAccessToken } from '@/services/auth';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import Head from 'next/head';
@@ -51,18 +51,15 @@ export default function CreateRecipePage() {
       }
       formData.append('description', recipeData.description);
       formData.append('cookingDuration', recipeData.cookingDuration.toString());
-      formData.append('category', recipeData.category);
+      formData.append('categoryId', recipeData.category);
       formData.append('ingredients', JSON.stringify(data.ingredients));
-      formData.append('steps', JSON.stringify(data.steps));
+      
+      const formattedSteps = data.steps.map(step => ({ step }));
+      formData.append('steps', JSON.stringify(formattedSteps));
 
-      const response = await axios.post(
-        'https://chefio-beta.vercel.app/api/v1/recipe/create-recipe',
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.post(
+        '/recipe/create-recipe',
+        formData
       );
 
       if (response.data.success) {

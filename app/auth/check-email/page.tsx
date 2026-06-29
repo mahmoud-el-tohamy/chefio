@@ -21,9 +21,10 @@ export default function CheckEmailPage() {
 
   useEffect(() => {
     // Get email based on the type
+    const userStr = localStorage.getItem('user');
     const email = type === 'forgot' 
       ? localStorage.getItem('resetEmail')
-      : JSON.parse(localStorage.getItem('user') || '{}')?.email;
+      : JSON.parse(userStr && userStr !== 'undefined' ? userStr : '{}')?.email;
     
     if (email) {
       setUserEmail(email);

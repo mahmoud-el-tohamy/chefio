@@ -1,12 +1,14 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import styles from '@/styles/RecipeGrid.module.css';
 import { Recipe } from "@/types";
 import Link from 'next/link';
 import UserAvatar from '@/components/common/UserAvatar';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
+import Cookies from 'js-cookie';
+import ImageWithFallback from '@/components/common/ImageWithFallback';
 
 interface RecipeGridProps {
   recipes: Recipe[];
@@ -15,6 +17,21 @@ interface RecipeGridProps {
 }
 
 const RecipeGrid: React.FC<RecipeGridProps> = ({ recipes, onToggleLike, isLoading = false }) => {
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = Cookies.get('accessToken') || Cookies.get('Authorization');
+    if (token) {
+      try {
+        const cleanToken = token.startsWith('Bearer ') ? token.substring(7) : token;
+        const payload = JSON.parse(atob(cleanToken.split('.')[1]));
+        setCurrentUserId(payload.id || payload._id || payload.userId || payload.user_id);
+      } catch (err) {
+        console.error('Error decoding token:', err);
+      }
+    }
+  }, []);
+
   if (isLoading) {
     return (
       <div className={styles.grid}>
@@ -40,7 +57,8 @@ const RecipeGrid: React.FC<RecipeGridProps> = ({ recipes, onToggleLike, isLoadin
           className={styles.recipeCard}
         >
           <div className={styles.imageContainer}>
-            <Image
+            <ImageWithFallback
+              fallbackSrc="/images/recipe-placeholder.svg"
               src={recipe.recipePicture}
               alt={`Image of ${recipe.foodName}`}
               fill
@@ -48,22 +66,24 @@ const RecipeGrid: React.FC<RecipeGridProps> = ({ recipes, onToggleLike, isLoadin
               className={styles.image}
               priority={false}
             />
-            <button 
-              className={`${styles.favoriteButton} ${recipe.isLiked ? styles.liked : ''}`}
-              onClick={(e) => { 
-                e.preventDefault(); 
-                e.stopPropagation();
-                onToggleLike(recipe._id); 
-              }}
-              aria-label={recipe.isLiked ? `Remove ${recipe.foodName} from favorites` : `Add ${recipe.foodName} to favorites`}
-            >
-              <Image
-                src={recipe.isLiked ? "/icons/heart-filled.svg" : "/icons/heart.svg"}
-                alt={recipe.isLiked ? "Remove from favorites" : "Add to favorites"}
-                width={24}
-                height={24}
-              />
-            </button>
+            {recipe.createdBy._id !== currentUserId && (
+              <button 
+                className={`${styles.favoriteButton} ${recipe.isLiked ? styles.liked : ''}`}
+                onClick={(e) => { 
+                  e.preventDefault(); 
+                  e.stopPropagation();
+                  onToggleLike(recipe._id); 
+                }}
+                aria-label={recipe.isLiked ? `Remove ${recipe.foodName} from favorites` : `Add ${recipe.foodName} to favorites`}
+              >
+                <Image
+                  src={recipe.isLiked ? "/icons/heart-filled.svg" : "/icons/heart.svg"}
+                  alt={recipe.isLiked ? "Remove from favorites" : "Add to favorites"}
+                  width={24}
+                  height={24}
+                />
+              </button>
+            )}
           </div>
           
           <div className={styles.authorInfo}>

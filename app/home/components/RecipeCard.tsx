@@ -5,6 +5,7 @@ import styles from '@/styles/home/RecipeCard.module.css';
 import Image from 'next/image';
 import { Recipe } from "@/types";
 import UserAvatar from '@/components/common/UserAvatar';
+import ImageWithFallback from '@/components/common/ImageWithFallback';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -14,7 +15,8 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
   return (
     <div className={styles.card}>
       <Link href={`/recipes/${recipe._id}`} className={styles.imageContainer} aria-label={`View details for ${recipe.foodName}`} tabIndex={-1}>
-        <Image
+        <ImageWithFallback
+          fallbackSrc="/images/recipe-placeholder.svg"
           src={recipe.recipePicture}
           alt={`Image of ${recipe.foodName}`}
           fill

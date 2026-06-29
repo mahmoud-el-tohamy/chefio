@@ -14,6 +14,7 @@ import SignOutIcon from "@/components/icons/SignOutIcon";
 import { createPortal } from "react-dom";
 import Cookies from "js-cookie";
 import { notificationService } from "@/services/notification";
+import { apiClient } from "@/services/apiClient";
 
 function Navbar() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -126,7 +127,7 @@ function Navbar() {
   }, []);
 
   useEffect(() => {
-    const token = Cookies.get('Authorization');
+    const token = Cookies.get('accessToken') || Cookies.get('Authorization');
     if (token) {
       try {
         // Remove 'Bearer ' prefix if it exists
@@ -153,15 +154,9 @@ function Navbar() {
 
   const handleSignOut = async () => {
     try {
-      const token = Cookies.get('Authorization');
+      const token = Cookies.get('accessToken') || Cookies.get('Authorization');
       if (token) {
-        await fetch('https://chefio-beta.vercel.app/api/v1/auth/signout', {
-          method: 'POST',
-          headers: {
-            'Authorization': token,
-            'Content-Type': 'application/json' // Assuming the endpoint might expect JSON, though body is empty
-          },
-        });
+        await apiClient.post('/auth/signout');
       }
     } catch (error) {
       console.error('Error during sign out:', error);

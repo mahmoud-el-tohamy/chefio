@@ -39,15 +39,6 @@ export interface SignupRequest {
 export interface SignupResponse {
   success: boolean;
   message: string;
-  result: {
-    username: string;
-    email: string;
-    followersCount: number;
-    followingCount: number;
-    verified: boolean;
-    _id: string;
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-  };
+  result?: any;
+  newUser?: any;
 } 

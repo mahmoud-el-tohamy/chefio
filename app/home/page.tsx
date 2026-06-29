@@ -11,11 +11,9 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getAccessToken } from '../services/auth';
-import axios from 'axios';
+import { apiClient } from '@/services/apiClient';
 import Pagination from "./components/Pagination";
 import Cookies from "js-cookie";
-
-const API_BASE_URL = 'https://chefio-beta.vercel.app/api/v1';
 
 const HomePage = () => {
   const router = useRouter();
@@ -73,13 +71,8 @@ const HomePage = () => {
         }
       });
 
-      const response = await axios.get<RecipeResponse>(
-        `${API_BASE_URL}/recipe/get-recipes?${queryParams.toString()}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
+      const response = await apiClient.get<RecipeResponse>(
+        `/recipe/get-recipes?${queryParams.toString()}`
       );
 
       if (response.data.success) {
@@ -136,7 +129,7 @@ const HomePage = () => {
 
   const handleToggleLike = async (recipeId: string) => {
     try {
-      let token = Cookies.get('Authorization');
+      let token = Cookies.get('accessToken') || Cookies.get('Authorization');
       if (!token) {
         alert("You need to be logged in to like recipes.");
         return;
@@ -154,14 +147,9 @@ const HomePage = () => {
         )
       );
 
-      const response = await axios.post(
-        `${API_BASE_URL}/recipe/likes/${recipeId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.post(
+        `/recipe/likes/${recipeId}`,
+        {}
       );
 
       if (!response.data.success) {

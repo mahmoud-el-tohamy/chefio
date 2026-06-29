@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/home/CategoryFilter.css";
 import { CATEGORIES } from "@/constants";
-import axios from 'axios';
-import { getAccessToken } from '@/services/auth';
+import { apiClient } from '@/services/apiClient';
 
 interface CategoryFilterProps {
   selectedCategory: string;
@@ -28,16 +27,8 @@ export default function CategoryFilter({
       setLoading(true);
       setError(null);
       try {
-        const token = getAccessToken();
-        // No token check here as categories might be public
-        
-        const response = await axios.get(
-          'https://chefio-beta.vercel.app/api/v1/recipe/get-categories',
-          {
-            headers: {
-              Authorization: token ? `Bearer ${token}` : '',
-            },
-          }
+        const response = await apiClient.get(
+          '/recipe/get-categories'
         );
 
         if (response.data.success) {

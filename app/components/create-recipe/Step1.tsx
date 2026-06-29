@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from '@/styles/CreateRecipe.module.css';
-import axios from 'axios';
-import { getAccessToken } from '@/services/auth';
+import { apiClient } from '@/services/apiClient';
 
 interface Step1Props {
   onNext: (data: { foodName: string; coverPhoto: File | null; description: string; cookingDuration: number; category: string }) => void;
@@ -31,15 +30,7 @@ export default function Step1({ onNext, onCancel, initialData }: Step1Props) {
       setLoading(true);
       setError(null);
       try {
-        const token = getAccessToken();
-        const response = await axios.get(
-          'https://chefio-beta.vercel.app/api/v1/recipe/get-categories',
-          {
-            headers: {
-              Authorization: token ? `Bearer ${token}` : '',
-            },
-          }
-        );
+        const response = await apiClient.get('/recipe/get-categories');
 
         if (response.data.success) {
           setCategories(response.data.categories);

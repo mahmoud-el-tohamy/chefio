@@ -10,7 +10,10 @@ import { currentUser } from "@/constants/currentUser";
 import { Recipe } from "@/types";
 import Head from "next/head";
 import Link from "next/link";
-import axios from "axios";
+import { apiClient } from "@/services/apiClient";
+import { recipeService } from "@/services/recipe";
+import { format } from "date-fns";
+import ImageWithFallback from '@/components/common/ImageWithFallback';
 import { getAccessToken } from "@/services/auth";
 import UserAvatar from "@/components/common/UserAvatar";
 import LoadingSpinner from '@/components/common/LoadingSpinner';
@@ -28,85 +31,7 @@ interface UserProfile {
   likedList: Recipe[];
 }
 
-const mockUser: UserProfile = {
-  username: "choirul",
-  name: "Choirul Syafril",
-  avatar: "/profile-avatar.jpg",
-  recipes: 32,
-  following: 782,
-  followers: 1287,
-  isFollowing: false,
-  isCurrentUser: false,
-  recipesList: [
-    { 
-      _id: "1",
-      title: "Pancake", 
-      category: "Food",
-      description: "Delicious fluffy pancakes",
-      ingredients: ["flour", "eggs", "milk"],
-      instructions: [],
-      cookingDuration: 30,
-      imageUrl: "",
-      likes: 0,
-      createdAt: "2024-01-01",
-      updatedAt: "2024-01-01"
-    },
-    { 
-      _id: "2",
-      title: "Salad", 
-      category: "Food",
-      description: "Fresh garden salad",
-      ingredients: ["lettuce", "tomatoes", "cucumber"],
-      instructions: [],
-      cookingDuration: 15,
-      imageUrl: "",
-      likes: 0,
-      createdAt: "2024-01-02",
-      updatedAt: "2024-01-02"
-    },
-    { 
-      _id: "3",
-      title: "Salad", 
-      category: "Food",
-      description: "Caesar salad",
-      ingredients: ["romaine", "croutons", "parmesan"],
-      instructions: [],
-      cookingDuration: 20,
-      imageUrl: "",
-      likes: 0,
-      createdAt: "2024-01-03",
-      updatedAt: "2024-01-03"
-    },
-    { 
-      _id: "4",
-      title: "Pancake", 
-      category: "Food",
-      description: "Blueberry pancakes",
-      ingredients: ["flour", "eggs", "milk", "blueberries"],
-      instructions: [],
-      cookingDuration: 35,
-      imageUrl: "",
-      likes: 0,
-      createdAt: "2024-01-04",
-      updatedAt: "2024-01-04"
-    }
-  ],
-  likedList: [
-    { 
-      _id: "5",
-      title: "Waffles", 
-      category: "Food",
-      description: "Crispy waffles",
-      ingredients: ["flour", "eggs", "milk", "butter"],
-      instructions: [],
-      cookingDuration: 25,
-      imageUrl: "",
-      likes: 0,
-      createdAt: "2024-01-05",
-      updatedAt: "2024-01-05"
-    }
-  ],
-};
+
 
 // Helper to decode JWT
 function parseJwt(token: string) {
@@ -173,13 +98,8 @@ const ProfilePage = () => {
         setUserId(userId);
         
         // Use the ID from URL params to fetch the profile
-        const response = await axios.get(
-          `https://chefio-beta.vercel.app/api/v1/user/get-profile/${username}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        const response = await apiClient.get(
+          `/user/get-profile/${username}`
         );
         if (response.data.success) {
           setProfile(response.data.profile);
@@ -205,13 +125,8 @@ const ProfilePage = () => {
       setLikedError(null);
       try {
         const token = getAccessToken() || "";
-        const response = await axios.get(
-            `https://chefio-beta.vercel.app/api/v1/user/get-liked-recipes-profile/${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        const response = await apiClient.get(
+            `/user/get-liked-recipes-profile/${userId}`
         );
         if (response.data.success) {
           setLikedRecipes(response.data.recipes.data);
@@ -235,13 +150,8 @@ const ProfilePage = () => {
       setFollowingError(null);
       try {
         const token = getAccessToken() || "";
-        const response = await axios.get(
-          `https://chefio-beta.vercel.app/api/v1/chef/follow/get-following/${profile._id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        const response = await apiClient.get(
+          `/chef/follow/get-following/${profile._id}`
         );
         if (response.data.success) {
           setFollowingList(response.data.following);
@@ -265,13 +175,8 @@ const ProfilePage = () => {
       setFollowersError(null);
       try {
         const token = getAccessToken() || "";
-        const response = await axios.get(
-          `https://chefio-beta.vercel.app/api/v1/chef/follow/get-followers/${profile._id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        const response = await apiClient.get(
+          `/chef/follow/get-followers/${profile._id}`
         );
         if (response.data.success) {
           setFollowersList(response.data.followers);
@@ -312,12 +217,9 @@ const ProfilePage = () => {
       }
 
       const method = isFollowing ? 'post' : 'post'; // Use DELETE for unfollow, POST for follow
-      const response = await axios({
+      const response = await apiClient({
         method: method,
-        url: `https://chefio-beta.vercel.app/api/v1/chef/follow/${targetProfileId}`,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        url: `/chef/follow/${targetProfileId}`
       });
 
       console.log(`${action} API response:`, response.data);
@@ -378,13 +280,12 @@ const ProfilePage = () => {
         return;
       }
 
-      const response = await axios.patch(
-        "https://chefio-beta.vercel.app/api/v1/user/upload-profile-picture",
+      const response = await apiClient.patch(
+        "/user/upload-profile-picture",
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
           },
         }
       );
@@ -440,13 +341,12 @@ const ProfilePage = () => {
         return;
       }
 
-      const response = await axios.patch(
-        "https://chefio-beta.vercel.app/api/v1/user/edit-profile",
+      const response = await apiClient.patch(
+        "/user/edit-profile",
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
           },
         }
       );
@@ -630,7 +530,8 @@ const ProfilePage = () => {
         <div className={styles.recipeGrid}>
           {tab === "recipes" && (profile.recipes?.data ?? []).map((recipe: any) => (
             <Link key={recipe._id} href={`/recipes/${recipe._id}`} className={styles.recipeCard} aria-label={`View details for ${recipe.foodName}`}>
-              <Image
+              <ImageWithFallback
+                fallbackSrc="/images/recipe-placeholder.svg"
                 src={recipe.recipePicture}
                 alt={recipe.foodName}
                 width={200}
@@ -651,7 +552,8 @@ const ProfilePage = () => {
             ) : (
               likedRecipes.map((recipe: any) => (
                 <Link key={recipe._id} href={`/recipes/${recipe._id}`} className={styles.recipeCard} aria-label={`View details for ${recipe.foodName}`}>
-                  <Image
+                  <ImageWithFallback
+                    fallbackSrc="/images/recipe-placeholder.svg"
                     src={recipe.recipePicture}
                     alt={recipe.foodName}
                     width={200}

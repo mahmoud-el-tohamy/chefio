@@ -1,28 +1,23 @@
 import { SignupResponse, SignupRequest, SigninRequest, SigninResponse } from '@/types/auth';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { apiClient } from './apiClient';
 
-const API_BASE_URL = 'https://chefio-beta.vercel.app/api/v1';
-
-// Create axios instance with default config
-export const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+export const api = apiClient;
 
 // Helper function to get access token from Authorization cookie
 export const getAccessToken = () => {
+  if (typeof window === 'undefined') return null;
   const cookies = document.cookie.split(';');
-  const authCookie = cookies.find(cookie => cookie.trim().startsWith('Authorization='));
+  const authCookie = cookies.find(cookie => cookie.trim().startsWith('accessToken='));
   if (!authCookie) return null;
-  // Remove 'Authorization=' and trim, then strip 'Bearer ' if present
+  // Remove 'accessToken=' and trim, then strip 'Bearer ' if present
   return decodeURIComponent(authCookie.split('=')[1].trim().replace(/^Bearer /, ''));
 };
 
 // Helper function to get refresh token
 export const getRefreshToken = () => {
+  if (typeof window === 'undefined') return null;
   const cookies = document.cookie.split(';');
   const refreshCookie = cookies.find(cookie => cookie.trim().startsWith('refreshToken='));
   if (!refreshCookie) return null;
@@ -32,21 +27,16 @@ export const getRefreshToken = () => {
 // Function to proactively refresh the token
 const proactiveRefreshToken = async () => {
   const accessToken = getAccessToken();
-  const refreshToken = getRefreshToken();
 
-  if (accessToken && refreshToken) {
+  if (accessToken) {
     try {
-      const response = await api.post('/auth/refresh-token', { refreshToken });
-      const { accessToken: newAccessToken } = response.data;
+      const response = await api.post('/auth/refresh-token', {});
+      const { newAccessToken } = response.data;
 
       // Update tokens in cookies
       const rawToken = newAccessToken.replace(/^Bearer /, '');
       document.cookie = `accessToken=${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
-      document.cookie = `Authorization=Bearer ${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
       
-      if (response.data.refreshToken) {
-        document.cookie = `refreshToken=${response.data.refreshToken}; path=/; max-age=604800; Secure; SameSite=Strict`;
-      }
       console.log('Access token proactively refreshed.');
     } catch (error) {
       console.error('Proactive token refresh failed:', error);
@@ -60,7 +50,9 @@ const proactiveRefreshToken = async () => {
 };
 
 // Set up interval for proactive refresh (every 7 minutes)
-setInterval(proactiveRefreshToken, 7 * 60 * 1000); 
+if (typeof window !== 'undefined') {
+  setInterval(proactiveRefreshToken, 7 * 60 * 1000); 
+}
 
 // Add request interceptor to add token to all requests
 api.interceptors.request.use((config) => {
@@ -71,7 +63,6 @@ api.interceptors.request.use((config) => {
     // Always store the raw JWT in accessToken, and 'Bearer <token>' in Authorization cookie
     const rawToken = token.replace(/^Bearer /, '');
     document.cookie = `accessToken=${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
-    document.cookie = `Authorization=Bearer ${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
   }
   return config;
 });
@@ -115,24 +106,14 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = getRefreshToken();
-        if (!refreshToken) {
-          throw new Error('No refresh token available');
-        }
-
-        const response = await api.post('/auth/refresh-token', { refreshToken });
-        const { accessToken } = response.data;
+        // Send a request to refresh the token. The HttpOnly refreshToken cookie will be sent automatically.
+        const response = await api.post('/auth/refresh-token', {});
+        const { newAccessToken } = response.data;
 
         // Update tokens in cookies
-        const rawToken = accessToken.replace(/^Bearer /, '');
+        const rawToken = newAccessToken.replace(/^Bearer /, '');
         document.cookie = `accessToken=${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
-        document.cookie = `Authorization=Bearer ${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
         
-        // Store refresh token if provided
-        if (response.data.refreshToken) {
-          document.cookie = `refreshToken=${response.data.refreshToken}; path=/; max-age=604800; Secure; SameSite=Strict`;
-        }
-
         // Update Authorization header
         originalRequest.headers.Authorization = `Bearer ${rawToken}`;
         
@@ -164,12 +145,6 @@ export const authService = {
         // Store the access token in both cookies with 15 minutes expiration
         const rawToken = response.data.accessToken.replace(/^Bearer /, '');
         document.cookie = `accessToken=${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
-        document.cookie = `Authorization=Bearer ${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
-        
-        // Store refresh token if provided
-        if (response.data.refreshToken) {
-          document.cookie = `refreshToken=${response.data.refreshToken}; path=/; max-age=604800; Secure; SameSite=Strict`;
-        }
       }
       return response.data;
     } catch (error: any) {
@@ -206,7 +181,7 @@ export const authService = {
         verified: decodedPayload.email_verified || true, // Use email_verified if available, otherwise true
       };
 
-      const response = await fetch(`${API_BASE_URL}/auth/google-signin`, {
+      const response = await fetch(`${api.defaults.baseURL}/auth/google-signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json", // Change to application/json
@@ -241,7 +216,6 @@ export const authService = {
         // Store the access token in both cookies with 15 minutes expiration
         const rawToken = data.accessToken.replace(/^Bearer /, '');
         document.cookie = `accessToken=${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
-        document.cookie = `Authorization=Bearer ${rawToken}; path=/; max-age=900; Secure; SameSite=Strict`;
         return data;
       } else {
         throw new Error("No access token received from server");

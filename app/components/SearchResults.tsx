@@ -6,6 +6,7 @@ import Image from 'next/image';
 import styles from '@/styles/SearchResults.module.css';
 import { Recipe } from "@/types";
 import UserAvatar from '@/components/common/UserAvatar';
+import ImageWithFallback from '@/components/common/ImageWithFallback';
 
 interface SearchResultsProps {
   query?: string;
@@ -52,7 +53,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         {results.map((recipe) => (
           <div key={recipe._id} className={styles.recipeCard}>
             <div className={styles.imageContainer}>
-              <Image
+              <ImageWithFallback
+                fallbackSrc="/images/recipe-placeholder.svg"
                 src={recipe.recipePicture}
                 alt={recipe.foodName}
                 width={200}
